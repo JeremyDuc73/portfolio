@@ -1,0 +1,55 @@
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode',
+    '@vueuse/nuxt',
+    '@nuxt/fonts',
+  ],
+
+  colorMode: {
+    classSuffix: '',
+    preference: 'dark',
+    fallback: 'dark',
+  },
+
+  fonts: {
+    families: [
+      { name: 'Inter', provider: 'google', weights: [300, 400, 500, 600, 700, 800, 900] },
+      { name: 'Space Grotesk', provider: 'google', weights: [300, 400, 500, 600, 700] },
+      { name: 'JetBrains Mono', provider: 'google', weights: [400, 500, 600, 700] },
+    ],
+  },
+
+  runtimeConfig: {
+    public: {
+      apiUrl: process.env.NUXT_PUBLIC_API_BROWSER_URL || 'http://localhost:11501',
+      apiBrowserUrl: process.env.NUXT_PUBLIC_API_BROWSER_URL || 'http://localhost:11501',
+    },
+  },
+
+  app: {
+    head: {
+      title: 'Jérémy Duc - Développeur Web Full-Stack',
+      htmlAttrs: { lang: 'fr' },
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'Portfolio de Jérémy Duc, développeur web full-stack passionné par les technologies modernes et le design élégant.' },
+        { name: 'theme-color', content: '#0a0a0a' },
+        { property: 'og:title', content: 'Jérémy Duc - Développeur Web Full-Stack' },
+        { property: 'og:description', content: 'Portfolio de Jérémy Duc, développeur web full-stack.' },
+        { property: 'og:type', content: 'website' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      ],
+    },
+    pageTransition: { name: 'page', mode: 'out-in' },
+  },
+
+  css: ['~/assets/css/main.css'],
+
+  compatibilityDate: '2024-07-01',
+})

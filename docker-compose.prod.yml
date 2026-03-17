@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "11500:3000"
+    environment:
+      - NUXT_PUBLIC_API_URL=http://backend:3333
+      - NUXT_PUBLIC_API_BROWSER_URL=http://localhost:11501
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "11501:3333"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3333
+      - NODE_ENV=production
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:11500}
+    restart: unless-stopped
