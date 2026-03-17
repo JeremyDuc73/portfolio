@@ -10,10 +10,10 @@
       <!-- Logo -->
       <NuxtLink to="/" class="group flex items-center gap-2">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center font-display font-bold text-white text-lg group-hover:scale-110 transition-transform duration-300">
-          JD
+          {{ c('navbar_logo_initials', 'JD') }}
         </div>
         <span class="font-display font-semibold text-white text-lg hidden sm:block">
-          Jérémy<span class="text-primary-400">.dev</span>
+          {{ c('navbar_logo_text', 'Jérémy') }}<span class="text-primary-400">{{ c('navbar_logo_suffix', '.dev') }}</span>
         </span>
       </NuxtLink>
 
@@ -84,6 +84,8 @@ const navbar = ref<HTMLElement | null>(null)
 const scrolled = ref(false)
 const mobileMenuOpen = ref(false)
 const activeSection = ref('hero')
+
+const { c } = usePortfolioData()
 
 const navLinks = [
   { label: 'Accueil', href: '#hero' },

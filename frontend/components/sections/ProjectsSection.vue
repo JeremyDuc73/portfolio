@@ -9,11 +9,11 @@
             <div>
               <div class="flex items-center gap-3 mb-6">
                 <div class="h-px w-12 bg-primary-500" />
-                <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">Projets</span>
+                <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('projects_section_label', 'Projets') }}</span>
               </div>
               <h2 class="font-display font-bold text-4xl md:text-5xl text-white leading-tight">
-                Mes réalisations<br />
-                <span class="gradient-text">récentes</span>
+                {{ c('projects_heading_line1', 'Mes réalisations') }}<br />
+                <span class="gradient-text">{{ c('projects_heading_highlight', 'récentes') }}</span>
               </h2>
             </div>
             <div class="hidden md:flex items-center gap-2 text-dark-500 text-sm font-mono">
@@ -137,7 +137,9 @@ const projectGradients = [
   'from-fuchsia-600/30 to-purple-600/30',
 ]
 
-const projects = [
+const { projectsData, c } = usePortfolioData()
+
+const fallbackProjects = [
   {
     slug: 'portfolio-website',
     title: 'Portfolio Personnel',
@@ -194,6 +196,13 @@ const projects = [
   },
 ]
 
+const projects = computed(() => {
+  if (projectsData.value && projectsData.value.length > 0) {
+    return projectsData.value
+  }
+  return fallbackProjects
+})
+
 // 3D tilt effect on cards
 function handleCardTilt(e: MouseEvent, index: number) {
   const card = projectCards.value?.[index]
@@ -247,10 +256,11 @@ onMounted(() => {
             progressBar.value.style.width = `${self.progress * 100}%`
           }
           // Update counter
-          if (counterCurrent.value) {
+          if (counterCurrent.value && projects.value.length > 0) {
+            const p = isNaN(self.progress) ? 0 : self.progress
             const idx = Math.min(
-              Math.floor(self.progress * projects.length) + 1,
-              projects.length
+              Math.floor(p * projects.value.length) + 1,
+              projects.value.length
             )
             counterCurrent.value.textContent = String(idx).padStart(2, '0')
           }

@@ -14,8 +14,7 @@ onMounted(() => {
 
   const container = snakeContainer.value
   const noise2D = createNoise2D()
-  const count = 6000
-  const initialVisible = 800
+  const count = 8000
 
   // Wait for full page render to get accurate height
   setTimeout(() => {
@@ -23,9 +22,11 @@ onMounted(() => {
       document.documentElement.scrollHeight,
       document.body.scrollHeight
     )
-    const spacing = pageHeight / count
+    const totalHeight = pageHeight + 500
+    const spacing = totalHeight / count
+    const initialVisible = Math.round((window.innerHeight * 1.02) / spacing)
 
-    container.style.height = pageHeight + 'px'
+    container.style.height = totalHeight + 'px'
 
     const fragment = document.createDocumentFragment()
 
@@ -88,21 +89,22 @@ onMounted(() => {
         document.documentElement.scrollHeight,
         document.body.scrollHeight
       )
-      container.style.height = newH + 'px'
-      const newSpacing = newH / count
+      const extH = newH + 500
+      container.style.height = extH + 'px'
+      const newSpacing = extH / count
       const all = container.querySelectorAll('.snake-circle')
       all.forEach((c: HTMLElement, idx: number) => {
         c.style.top = (idx * newSpacing) + 'px'
       })
     })
-  }, 500)
+  }, 1000)
 })
 </script>
 
 <style>
 .snake-container {
   position: absolute;
-  top: 0;
+  top: -150px;
   left: 0;
   width: 100%;
   z-index: 1;

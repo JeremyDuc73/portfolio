@@ -67,6 +67,11 @@ export function initDB() {
       maintenance_mode INTEGER NOT NULL DEFAULT 0,
       maintenance_message TEXT NOT NULL DEFAULT 'Site en maintenance. Revenez bientôt.'
     );
+
+    CREATE TABLE IF NOT EXISTS site_content (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL DEFAULT ''
+    );
   `)
 
   // Seed default settings
@@ -140,6 +145,62 @@ export function initDB() {
       for (const row of rows) insert.run(...row)
     })
     insertMany(projects)
+  }
+
+  // Seed default site content
+  const contentCount = db.prepare('SELECT COUNT(*) as c FROM site_content').get() as { c: number }
+  if (contentCount.c === 0) {
+    const insert = db.prepare('INSERT INTO site_content (key, value) VALUES (?, ?)')
+    const defaults: [string, string][] = [
+      // Hero
+      ['hero_badge_text', 'Développeur Web Full-Stack'],
+      ['hero_first_name', 'Jérémy'],
+      ['hero_last_name', 'Duc'],
+      ['hero_subtitle', 'Développeur Web Full-Stack'],
+      ['hero_description', 'Je conçois des expériences web modernes, performantes et élégantes. Chaque ligne de code est pensée pour impressionner.'],
+      ['hero_cta_primary', 'Voir mes projets'],
+      ['hero_cta_secondary', 'En savoir plus'],
+      // About
+      ['about_section_label', 'À propos'],
+      ['about_heading_line1', 'Créer des expériences'],
+      ['about_heading_highlight', 'qui marquent'],
+      ['about_code_name', 'Jérémy Duc'],
+      ['about_code_role', 'Full-Stack Developer'],
+      ['about_code_passion', 'Building elegant web apps'],
+      ['about_code_coffee', 'always'],
+      ['about_stats', JSON.stringify([
+        { value: '5+', label: "Années d\'exp." },
+        { value: '30+', label: 'Projets réalisés' },
+        { value: '10+', label: 'Technologies' },
+        { value: '100%', label: 'Passion' },
+      ])],
+      // Skills
+      ['skills_section_label', 'Compétences'],
+      ['skills_heading', 'Mon arsenal'],
+      ['skills_heading_highlight', 'technique'],
+      ['skills_subheading', 'Les technologies que je maîtrise au quotidien pour créer des applications web modernes.'],
+      // Projects
+      ['projects_section_label', 'Projets'],
+      ['projects_heading_line1', 'Mes réalisations'],
+      ['projects_heading_highlight', 'récentes'],
+      // Contact
+      ['contact_section_label', 'Contact'],
+      ['contact_heading', 'Restons en'],
+      ['contact_heading_highlight', 'contact'],
+      ['contact_subheading', "Une question, une remarque ou simplement envie d\'échanger ? N\'hésitez pas à m\'écrire."],
+      ['contact_button_text', 'Envoyer le message'],
+      // Navbar
+      ['navbar_logo_initials', 'JD'],
+      ['navbar_logo_text', 'Jérémy'],
+      ['navbar_logo_suffix', '.dev'],
+      // Footer
+      ['footer_copyright_name', 'Jérémy Duc'],
+      ['footer_made_by', 'Jérémy Duc'],
+    ]
+    const insertMany = db.transaction((rows: [string, string][]) => {
+      for (const [k, v] of rows) insert.run(k, v)
+    })
+    insertMany(defaults)
   }
 
   // Seed default admin password: "admin" (hashed simply — change in production)

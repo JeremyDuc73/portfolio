@@ -252,6 +252,207 @@
           </div>
         </div>
 
+        <!-- Content tab -->
+        <div v-if="activeTab === 'content'">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-display font-bold text-2xl">Contenu du site</h2>
+            <button @click="saveContent" :disabled="saving" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium transition-colors disabled:opacity-50">
+              {{ saving ? 'Enregistrement...' : 'Enregistrer tout' }}
+            </button>
+          </div>
+
+          <!-- Hero section -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Hero</h3>
+            <div class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Prénom</label>
+                  <input v-model="contentData.hero_first_name" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Nom</label>
+                  <input v-model="contentData.hero_last_name" class="admin-input" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Badge texte</label>
+                  <input v-model="contentData.hero_badge_text" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Sous-titre (tapé)</label>
+                  <input v-model="contentData.hero_subtitle" class="admin-input" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Description</label>
+                <textarea v-model="contentData.hero_description" rows="2" class="admin-input" />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Bouton principal</label>
+                  <input v-model="contentData.hero_cta_primary" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Bouton secondaire</label>
+                  <input v-model="contentData.hero_cta_secondary" class="admin-input" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- About section -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section À propos</h3>
+            <div class="space-y-4">
+              <div class="grid grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Label section</label>
+                  <input v-model="contentData.about_section_label" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Titre ligne 1</label>
+                  <input v-model="contentData.about_heading_line1" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
+                  <input v-model="contentData.about_heading_highlight" class="admin-input" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Code — Nom</label>
+                  <input v-model="contentData.about_code_name" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Code — Rôle</label>
+                  <input v-model="contentData.about_code_role" class="admin-input" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Code — Passion</label>
+                  <input v-model="contentData.about_code_passion" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Code — Café</label>
+                  <input v-model="contentData.about_code_coffee" class="admin-input" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Statistiques (JSON)</label>
+                <textarea v-model="contentStatsJson" rows="4" class="admin-input font-mono text-xs" />
+                <p class="text-dark-600 text-xs mt-1">Format : [{"value":"5+","label":"Années d'exp."}]</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills section -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Compétences</h3>
+            <div class="space-y-4">
+              <div class="grid grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Label section</label>
+                  <input v-model="contentData.skills_section_label" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Titre</label>
+                  <input v-model="contentData.skills_heading" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
+                  <input v-model="contentData.skills_heading_highlight" class="admin-input" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Sous-titre</label>
+                <textarea v-model="contentData.skills_subheading" rows="2" class="admin-input" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects section -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Projets</h3>
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Label section</label>
+                <input v-model="contentData.projects_section_label" class="admin-input" />
+              </div>
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Titre ligne 1</label>
+                <input v-model="contentData.projects_heading_line1" class="admin-input" />
+              </div>
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
+                <input v-model="contentData.projects_heading_highlight" class="admin-input" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact section -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Contact</h3>
+            <div class="space-y-4">
+              <div class="grid grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Label section</label>
+                  <input v-model="contentData.contact_section_label" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Titre</label>
+                  <input v-model="contentData.contact_heading" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
+                  <input v-model="contentData.contact_heading_highlight" class="admin-input" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Sous-titre</label>
+                <textarea v-model="contentData.contact_subheading" rows="2" class="admin-input" />
+              </div>
+              <div>
+                <label class="block text-dark-400 text-sm mb-1">Texte du bouton</label>
+                <input v-model="contentData.contact_button_text" class="admin-input" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Navbar / Footer -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Navbar &amp; Footer</h3>
+            <div class="space-y-4">
+              <div class="grid grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Logo initiales</label>
+                  <input v-model="contentData.navbar_logo_initials" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Logo texte</label>
+                  <input v-model="contentData.navbar_logo_text" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Logo suffixe</label>
+                  <input v-model="contentData.navbar_logo_suffix" class="admin-input" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Copyright nom</label>
+                  <input v-model="contentData.footer_copyright_name" class="admin-input" />
+                </div>
+                <div>
+                  <label class="block text-dark-400 text-sm mb-1">Fait par</label>
+                  <input v-model="contentData.footer_made_by" class="admin-input" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Status toast -->
         <div v-if="toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl text-sm font-medium animate-pulse z-50" :class="toast.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'">
           {{ toast.message }}
@@ -285,7 +486,7 @@ const password = ref('')
 const loginError = ref('')
 const loginLoading = ref(false)
 const saving = ref(false)
-const activeTab = ref('about')
+const activeTab = ref('content')
 const showPasswordModal = ref(false)
 const newPassword = ref('')
 const toast = ref<{ message: string; type: string } | null>(null)
@@ -293,6 +494,7 @@ const maintenanceMode = ref(false)
 const maintenanceMessage = ref('Site en maintenance. Revenez bientôt.')
 
 const tabs = [
+  { id: 'content', label: 'Contenu du site' },
   { id: 'about', label: 'À propos' },
   { id: 'skills', label: 'Compétences' },
   { id: 'experience', label: 'Expérience' },
@@ -304,6 +506,8 @@ const aboutData = ref<any>({})
 const skillsData = ref<any[]>([])
 const experienceData = ref<any[]>([])
 const projectsData = ref<any[]>([])
+const contentData = ref<Record<string, string>>({})
+const contentStatsJson = ref('[]')
 
 async function loadSettings() {
   try {
@@ -401,11 +605,12 @@ async function changePassword() {
 // Data loading
 async function loadAllData() {
   try {
-    const [about, skills, experience, projects] = await Promise.all([
+    const [about, skills, experience, projects, content] = await Promise.all([
       apiFetch('/api/admin/about'),
       apiFetch('/api/admin/skills'),
       apiFetch('/api/admin/experience'),
       apiFetch('/api/admin/projects'),
+      apiFetch('/api/admin/content'),
     ])
     aboutData.value = about || {}
     skillsData.value = skills || []
@@ -414,8 +619,36 @@ async function loadAllData() {
       ...p,
       tagsString: Array.isArray(p.tags) ? p.tags.join(', ') : (p.tags || ''),
     }))
+    contentData.value = content || {}
+    contentStatsJson.value = contentData.value.about_stats || '[]'
   } catch (e: any) {
     showToast('Erreur de chargement: ' + e.message, 'error')
+  }
+}
+
+// Site content
+async function saveContent() {
+  saving.value = true
+  try {
+    contentData.value.about_stats = contentStatsJson.value
+    await apiFetch('/api/admin/content', {
+      method: 'PUT',
+      body: JSON.stringify(contentData.value),
+    })
+    showToast('Contenu du site enregistr\u00e9')
+  } catch (e: any) {
+    showToast(e.message, 'error')
+  }
+  saving.value = false
+}
+
+function addStat() {
+  try {
+    const stats = JSON.parse(contentStatsJson.value || '[]')
+    stats.push({ value: '', label: '' })
+    contentStatsJson.value = JSON.stringify(stats, null, 2)
+  } catch {
+    contentStatsJson.value = '[{"value":"","label":""}]'
   }
 }
 

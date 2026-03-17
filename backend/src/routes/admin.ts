@@ -121,6 +121,26 @@ adminRoutes.delete('/projects/:id', adminAuth, (c) => {
   return c.json({ success: true })
 })
 
+// ─── SITE CONTENT ──────────────────────────────
+adminRoutes.get('/content', adminAuth, (c) => {
+  const rows = db.prepare('SELECT key, value FROM site_content').all() as { key: string; value: string }[]
+  const content: Record<string, string> = {}
+  for (const row of rows) {
+    content[row.key] = row.value
+  }
+  return c.json(content)
+})
+
+adminRoutes.put('/content', adminAuth, async (c) => {
+  const data = await c.req.json<Record<string, string>>()
+  const upsert = db.prepare('INSERT INTO site_content (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value')
+  const updateMany = db.transaction((entries: [string, string][]) => {
+    for (const [k, v] of entries) upsert.run(k, v)
+  })
+  updateMany(Object.entries(data))
+  return c.json({ success: true })
+})
+
 // ─── SETTINGS / MAINTENANCE ─────────────────────────────
 adminRoutes.get('/settings', adminAuth, (c) => {
   const settings = db.prepare('SELECT * FROM settings WHERE id = 1').get()

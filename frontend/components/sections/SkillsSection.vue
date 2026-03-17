@@ -7,15 +7,15 @@
       <div ref="header" class="text-center mb-20 opacity-0">
         <div class="flex items-center justify-center gap-3 mb-6">
           <div class="h-px w-12 bg-primary-500" />
-          <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">Compétences</span>
+          <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('skills_section_label', 'Compétences') }}</span>
           <div class="h-px w-12 bg-primary-500" />
         </div>
         <h2 class="font-display font-bold text-4xl md:text-5xl text-white mb-4">
-          Mon arsenal
-          <span class="gradient-text">technique</span>
+          {{ c('skills_heading', 'Mon arsenal') }}
+          <span class="gradient-text">{{ c('skills_heading_highlight', 'technique') }}</span>
         </h2>
         <p class="text-dark-400 max-w-xl mx-auto">
-          Les technologies que je maîtrise au quotidien pour créer des applications web modernes.
+          {{ c('skills_subheading', 'Les technologies que je maîtrise au quotidien pour créer des applications web modernes.') }}
         </p>
       </div>
 
@@ -82,7 +82,15 @@ function clearGlow(index: number) {
   glow.style.opacity = '0'
 }
 
-const categories = [
+const { aboutData, c } = usePortfolioData()
+
+const categoryMeta: Record<string, { description: string; icon: any }> = {
+  'Frontend': { description: 'Interfaces modernes et réactives', icon: Monitor },
+  'Backend': { description: 'APIs robustes et scalables', icon: Server },
+  'DevOps': { description: 'Déploiement et automatisation', icon: Container },
+}
+
+const fallbackCategories = [
   {
     name: 'Frontend',
     description: 'Interfaces modernes et réactives',
@@ -123,6 +131,23 @@ const categories = [
     ],
   },
 ]
+
+const categories = computed(() => {
+  if (aboutData.value?.skills?.length) {
+    const grouped: Record<string, Array<{ name: string }>> = {}
+    for (const skill of aboutData.value.skills) {
+      if (!grouped[skill.category]) grouped[skill.category] = []
+      grouped[skill.category].push({ name: skill.name })
+    }
+    return Object.entries(grouped).map(([name, skills]) => ({
+      name,
+      description: categoryMeta[name]?.description || name,
+      icon: categoryMeta[name]?.icon || Monitor,
+      skills,
+    }))
+  }
+  return fallbackCategories
+})
 
 onMounted(() => {
   const { $gsap } = useNuxtApp()

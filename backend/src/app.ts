@@ -5,6 +5,7 @@ import { initDB, db } from './db/index.js'
 import { projectsRoutes } from './routes/projects.js'
 import { contactRoutes } from './routes/contact.js'
 import { aboutRoutes } from './routes/about.js'
+import { contentRoutes } from './routes/content.js'
 import { adminRoutes } from './routes/admin.js'
 
 // Initialize database and seed defaults
@@ -33,6 +34,7 @@ app.get('/api/maintenance', (c) => {
 app.route('/api/projects', projectsRoutes)
 app.route('/api/contact', contactRoutes)
 app.route('/api/about', aboutRoutes)
+app.route('/api/content', contentRoutes)
 app.route('/api/admin', adminRoutes)
 
 // 404 handler

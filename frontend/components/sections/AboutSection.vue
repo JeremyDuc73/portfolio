@@ -17,10 +17,10 @@
               <!-- Code decoration -->
               <div class="font-mono text-xs text-dark-600 space-y-1">
                 <p><span class="text-primary-400">const</span> developer = {</p>
-                <p class="pl-4"><span class="text-emerald-400">name</span>: <span class="text-amber-400">'Jérémy Duc'</span>,</p>
-                <p class="pl-4"><span class="text-emerald-400">role</span>: <span class="text-amber-400">'Full-Stack Developer'</span>,</p>
-                <p class="pl-4"><span class="text-emerald-400">passion</span>: <span class="text-amber-400">'Building elegant web apps'</span>,</p>
-                <p class="pl-4"><span class="text-emerald-400">coffee</span>: <span class="text-amber-400">'always'</span>,</p>
+                <p class="pl-4"><span class="text-emerald-400">name</span>: <span class="text-amber-400">'{{ c('about_code_name', 'Jérémy Duc') }}'</span>,</p>
+                <p class="pl-4"><span class="text-emerald-400">role</span>: <span class="text-amber-400">'{{ c('about_code_role', 'Full-Stack Developer') }}'</span>,</p>
+                <p class="pl-4"><span class="text-emerald-400">passion</span>: <span class="text-amber-400">'{{ c('about_code_passion', 'Building elegant web apps') }}'</span>,</p>
+                <p class="pl-4"><span class="text-emerald-400">coffee</span>: <span class="text-amber-400">'{{ c('about_code_coffee', 'always') }}'</span>,</p>
                 <p>};</p>
               </div>
 
@@ -39,24 +39,16 @@
         <div ref="contentCol" class="opacity-0 translate-y-12">
           <div class="flex items-center gap-3 mb-6">
             <div ref="line" class="h-px w-0 bg-primary-500" />
-            <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">À propos</span>
+            <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('about_section_label', 'À propos') }}</span>
           </div>
 
           <h2 class="font-display font-bold text-4xl md:text-5xl text-white mb-6 leading-tight">
-            Créer des expériences<br />
-            <span class="gradient-text">qui marquent</span>
+            {{ c('about_heading_line1', 'Créer des expériences') }}<br />
+            <span class="gradient-text">{{ c('about_heading_highlight', 'qui marquent') }}</span>
           </h2>
 
           <div ref="paragraphs" class="space-y-4 text-dark-400 leading-relaxed">
-            <p>
-              Passionné par le développement web depuis plus de 5 ans, je me spécialise dans la création d'applications web modernes et performantes. Mon approche allie rigueur technique et sens du design.
-            </p>
-            <p>
-              Je maîtrise l'écosystème JavaScript de bout en bout — du frontend avec Vue.js et Nuxt au backend avec Node.js. Je porte une attention particulière à l'expérience utilisateur, aux animations fluides et à l'optimisation des performances.
-            </p>
-            <p>
-              Toujours curieux et en veille technologique, j'aime explorer de nouvelles approches pour repousser les limites du web moderne.
-            </p>
+            <p v-for="(paragraph, i) in bioParagraphs" :key="i">{{ paragraph }}</p>
           </div>
 
           <!-- Tags with stagger -->
@@ -87,17 +79,45 @@ const paragraphs = ref<HTMLElement | null>(null)
 const statValues = ref<HTMLElement[]>([])
 const tagEls = ref<HTMLElement[]>([])
 
-const stats = [
+const { aboutData, c } = usePortfolioData()
+
+const fallbackBio = `Passionné par le développement web depuis plus de 5 ans, je me spécialise dans la création d'applications web modernes et performantes. Mon approche allie rigueur technique et sens du design.
+
+Je maîtrise l'écosystème JavaScript de bout en bout — du frontend avec Vue.js et Nuxt au backend avec Node.js. Je porte une attention particulière à l'expérience utilisateur, aux animations fluides et à l'optimisation des performances.
+
+Toujours curieux et en veille technologique, j'aime explorer de nouvelles approches pour repousser les limites du web moderne.`
+
+const fallbackTags = [
+  'Vue.js', 'Nuxt', 'React', 'TypeScript', 'Node.js', 'Hono',
+  'PostgreSQL', 'Docker', 'TailwindCSS', 'Git', 'CI/CD', 'REST API',
+]
+
+const bioParagraphs = computed(() => {
+  const bio = aboutData.value?.bio || fallbackBio
+  return bio.split('\n\n').filter((p: string) => p.trim())
+})
+
+const defaultStats = [
   { value: '5+', label: "Années d'exp." },
   { value: '30+', label: 'Projets réalisés' },
   { value: '10+', label: 'Technologies' },
   { value: '100%', label: 'Passion' },
 ]
 
-const tags = [
-  'Vue.js', 'Nuxt', 'React', 'TypeScript', 'Node.js', 'Hono',
-  'PostgreSQL', 'Docker', 'TailwindCSS', 'Git', 'CI/CD', 'REST API',
-]
+const stats = computed(() => {
+  const raw = c('about_stats', '')
+  if (raw) {
+    try { return JSON.parse(raw) } catch {}
+  }
+  return defaultStats
+})
+
+const tags = computed(() => {
+  if (aboutData.value?.skills?.length) {
+    return aboutData.value.skills.map(s => s.name)
+  }
+  return fallbackTags
+})
 
 onMounted(() => {
   const { $gsap } = useNuxtApp()

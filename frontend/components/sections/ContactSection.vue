@@ -8,15 +8,15 @@
       <div ref="header" class="text-center mb-16 opacity-0">
         <div class="flex items-center justify-center gap-3 mb-6">
           <div class="h-px w-12 bg-primary-500" />
-          <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">Contact</span>
+          <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('contact_section_label', 'Contact') }}</span>
           <div class="h-px w-12 bg-primary-500" />
         </div>
         <h2 class="font-display font-bold text-4xl md:text-5xl text-white mb-4">
-          Restons en
-          <span class="gradient-text">contact</span>
+          {{ c('contact_heading', 'Restons en') }}
+          <span class="gradient-text">{{ c('contact_heading_highlight', 'contact') }}</span>
         </h2>
         <p class="text-dark-400 max-w-xl mx-auto">
-          Une question, une remarque ou simplement envie d'échanger ? N'hésitez pas à m'écrire.
+          {{ c('contact_subheading', "Une question, une remarque ou simplement envie d'échanger ? N'hésitez pas à m'écrire.") }}
         </p>
       </div>
 
@@ -111,7 +111,7 @@
               class="w-full py-4 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Send :size="18" />
-              <span>{{ sending ? 'Envoi en cours...' : 'Envoyer le message' }}</span>
+              <span>{{ sending ? 'Envoi en cours...' : c('contact_button_text', 'Envoyer le message') }}</span>
             </button>
           </form>
         </div>
@@ -130,6 +130,8 @@ const sending = ref(false)
 const statusMessage = ref('')
 const statusSuccess = ref(false)
 
+const { aboutData, c } = usePortfolioData()
+
 const form = reactive({
   name: '',
   email: '',
@@ -137,15 +139,15 @@ const form = reactive({
   message: '',
 })
 
-const contactInfos = [
-  { label: 'Email', value: 'contact@jeremyduc.dev', icon: Mail },
-  { label: 'Localisation', value: 'France', icon: MapPin },
-]
+const contactInfos = computed(() => [
+  { label: 'Email', value: aboutData.value?.email || 'contact@jeremyduc.dev', icon: Mail },
+  { label: 'Localisation', value: aboutData.value?.location || 'France', icon: MapPin },
+])
 
-const socials = [
-  { label: 'GitHub', url: 'https://github.com/jeremyduc', icon: Github },
-  { label: 'LinkedIn', url: 'https://linkedin.com/in/jeremyduc', icon: Linkedin },
-]
+const socials = computed(() => [
+  { label: 'GitHub', url: aboutData.value?.socials?.github || 'https://github.com/jeremyduc', icon: Github },
+  { label: 'LinkedIn', url: aboutData.value?.socials?.linkedin || 'https://linkedin.com/in/jeremyduc', icon: Linkedin },
+])
 
 const handleSubmit = async () => {
   sending.value = true

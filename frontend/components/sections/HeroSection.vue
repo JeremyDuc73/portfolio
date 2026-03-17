@@ -18,7 +18,7 @@
 
       <!-- Main heading with character split -->
       <h1 ref="heading" class="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-tight mb-6">
-        <span class="sr-only">Jérémy Duc</span>
+        <span class="sr-only">{{ c('hero_first_name', 'Jérémy') }} {{ c('hero_last_name', 'Duc') }}</span>
         <span aria-hidden="true" class="inline-block overflow-hidden pb-3">
           <span ref="firstName" class="inline-block" />
         </span>
@@ -29,11 +29,8 @@
       </h1>
 
       <!-- Subtitle typed char by char -->
-      <div ref="subtitle" class="text-xl sm:text-2xl md:text-3xl text-dark-400 font-light mb-4 h-10 opacity-0">
-        <span class="font-mono text-primary-400">&lt;</span>
-        <span ref="subtitleText" class="inline-block" />
-        <span ref="cursor" class="inline-block w-[2px] h-[1em] bg-primary-400 ml-1 align-middle" />
-        <span class="font-mono text-primary-400">/&gt;</span>
+      <div ref="subtitle" class="text-xl sm:text-2xl md:text-3xl text-dark-400 font-light mb-4 h-10 opacity-0 text-center whitespace-nowrap">
+        <span class="text-primary-400">&lt;</span><span ref="subtitleText" /><span ref="cursor" class="inline-block w-[2px] h-[0.9em] bg-primary-400 ml-1 align-middle" /><span class="text-primary-400 ml-0.5">/&gt;</span>
       </div>
 
       <!-- Description with staggered word reveal -->
@@ -49,7 +46,7 @@
           class="magnetic group px-8 py-4 rounded-2xl bg-primary-600 hover:bg-primary-500 text-white font-medium transition-colors duration-300 hover:shadow-2xl hover:shadow-primary-500/25 flex items-center gap-2"
           @click.prevent="scrollTo('#projects')"
         >
-          <span class="relative z-10">Voir mes projets</span>
+          <span class="relative z-10">{{ c('hero_cta_primary', 'Voir mes projets') }}</span>
           <svg class="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>
@@ -60,7 +57,7 @@
           class="magnetic px-8 py-4 rounded-2xl glass glass-hover text-white font-medium"
           @click.prevent="scrollTo('#about')"
         >
-          <span class="relative z-10">En savoir plus</span>
+          <span class="relative z-10">{{ c('hero_cta_secondary', 'En savoir plus') }}</span>
         </a>
       </div>
 
@@ -92,7 +89,12 @@ const ctaPrimary = ref<HTMLElement | null>(null)
 const ctaSecondary = ref<HTMLElement | null>(null)
 const scrollIndicator = ref<HTMLElement | null>(null)
 
-const descriptionWords = 'Je conçois des expériences web modernes, performantes et élégantes. Chaque ligne de code est pensée pour impressionner.'.split(' ')
+const { contentData, c } = usePortfolioData()
+
+const descriptionWords = computed(() => {
+  const text = c('hero_description', 'Je conçois des expériences web modernes, performantes et élégantes. Chaque ligne de code est pensée pour impressionner.')
+  return text.split(' ')
+})
 
 const scrollTo = (selector: string) => {
   document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth' })
@@ -298,14 +300,14 @@ onMounted(async () => {
     gsap.to(badge.value, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
   }
   if (badgeText.value) {
-    await scrambleText(badgeText.value, 'Développeur Web Full-Stack', 600)
+    await scrambleText(badgeText.value, c('hero_badge_text', 'Développeur Web Full-Stack'), 600)
   }
 
   // Name reveal — slide up from below with clip
   if (firstName.value) {
     firstName.value.textContent = ''
     gsap.set(firstName.value, { y: 120 })
-    firstName.value.textContent = 'Jérémy '
+    firstName.value.textContent = c('hero_first_name', 'Jérémy') + ' '
     gsap.to(firstName.value, { y: 0, duration: 1, ease: 'expo.out' })
   }
 
@@ -314,7 +316,7 @@ onMounted(async () => {
   if (lastName.value) {
     lastName.value.textContent = ''
     gsap.set(lastName.value, { y: 120 })
-    lastName.value.textContent = 'Duc'
+    lastName.value.textContent = c('hero_last_name', 'Duc')
     gsap.to(lastName.value, { y: 0, duration: 1, ease: 'expo.out' })
   }
 
@@ -325,7 +327,7 @@ onMounted(async () => {
     gsap.to(subtitle.value, { opacity: 1, duration: 0.3 })
   }
   if (subtitleText.value) {
-    await typeText(subtitleText.value, 'Développeur Web Full-Stack', 40)
+    await typeText(subtitleText.value, c('hero_subtitle', 'Développeur Web Full-Stack'), 40)
   }
 
   // Description words stagger
