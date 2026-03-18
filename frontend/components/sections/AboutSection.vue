@@ -9,8 +9,8 @@
         <div ref="imageCol" class="relative" style="clip-path: inset(100% 0 0 0);">
           <div class="relative aspect-square max-w-md mx-auto">
             <!-- Decorative frames with rotation -->
-            <div ref="frame1" class="absolute inset-4 rounded-3xl border border-primary-500/20 rotate-3" />
-            <div ref="frame2" class="absolute inset-4 rounded-3xl border border-primary-400/10 -rotate-2" />
+            <div ref="frame1" class="absolute -inset-2 rounded-3xl border border-primary-500/20 rotate-3" />
+            <div ref="frame2" class="absolute -inset-2 rounded-3xl border border-primary-400/10 -rotate-2" />
 
             <!-- Main card -->
             <div class="relative h-full rounded-3xl glass overflow-hidden p-8 flex flex-col justify-between">

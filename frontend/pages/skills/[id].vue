@@ -9,7 +9,7 @@
 
       <div v-if="skill" class="max-w-4xl">
         <!-- Skill header -->
-        <div ref="headerEl" class="mb-12 opacity-0 translate-y-8">
+        <div ref="headerEl" class="mb-12">
           <div class="flex items-center gap-4 mb-4">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500/20 to-violet-600/20 border border-primary-500/20 flex items-center justify-center">
               <component :is="categoryIcon" :size="28" class="text-primary-400" />
@@ -26,51 +26,31 @@
         </div>
 
         <!-- Related projects -->
-        <div v-if="skill.projects?.length" ref="projectsEl" class="opacity-0 translate-y-8">
+        <div v-if="skill.projects?.length" ref="projectsEl">
           <h2 class="font-display font-semibold text-2xl text-white mb-6 flex items-center gap-3">
             <div class="h-px w-8 bg-primary-500" />
             Projets réalisés avec {{ skill.name }}
           </h2>
 
           <div class="grid md:grid-cols-2 gap-6">
-            <div
-              v-for="(project, i) in skill.projects"
+            <NuxtLink
+              v-for="project in skill.projects"
               :key="project.slug"
+              :to="`/projects/${project.slug}`"
               ref="projectCards"
-              class="group rounded-2xl glass overflow-hidden hover:border-primary-500/20 transition-all duration-500 opacity-0 translate-y-6"
+              class="group rounded-2xl glass overflow-hidden hover:border-primary-500/20 transition-all duration-500"
             >
               <!-- Project image -->
               <div class="relative h-44 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary-600/20 to-violet-600/20" />
                 <img
                   v-if="project.image"
                   :src="project.image"
                   :alt="project.title"
                   class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  @error="($event.target as HTMLImageElement).style.display = 'none'"
                 />
-                <div v-else class="absolute inset-0 bg-gradient-to-br from-primary-600/20 to-violet-600/20" />
                 <div class="absolute inset-0 bg-dark-950/40" />
-
-                <!-- Overlay links -->
-                <div class="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <a
-                    v-if="project.github"
-                    :href="project.github"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="w-10 h-10 rounded-xl glass flex items-center justify-center text-white hover:bg-primary-500/20 transition-all"
-                  >
-                    <Github :size="18" />
-                  </a>
-                  <a
-                    v-if="project.demo"
-                    :href="project.demo"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="w-10 h-10 rounded-xl glass flex items-center justify-center text-white hover:bg-primary-500/20 transition-all"
-                  >
-                    <ExternalLink :size="18" />
-                  </a>
-                </div>
               </div>
 
               <!-- Content -->
@@ -89,7 +69,7 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </NuxtLink>
           </div>
         </div>
 
@@ -108,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { Monitor, Server, Container, ArrowLeft, Github, ExternalLink } from 'lucide-vue-next'
+import { Monitor, Server, Container, ArrowLeft } from 'lucide-vue-next'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -130,23 +110,36 @@ useHead({
   title: computed(() => skill.value ? `${skill.value.name} — Jérémy Duc` : 'Compétence'),
 })
 
+const headerEl = ref<HTMLElement | null>(null)
+const projectsEl = ref<HTMLElement | null>(null)
+const projectCards = ref<any[]>([])
+
 onMounted(() => {
   const { $gsap } = useNuxtApp()
   if (!$gsap) return
   const gsap = $gsap as any
 
   nextTick(() => {
-    const headerEl = document.querySelector('[ref="headerEl"]')?.parentElement?.querySelector('.opacity-0.translate-y-8')
-    
-    gsap.to('.opacity-0.translate-y-8', {
-      opacity: 1, y: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out',
-    })
+    if (headerEl.value) {
+      gsap.fromTo(headerEl.value,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+      )
+    }
 
-    const cards = document.querySelectorAll('.opacity-0.translate-y-6')
-    if (cards.length) {
-      gsap.to(cards, {
-        opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out', delay: 0.4,
-      })
+    if (projectsEl.value) {
+      gsap.fromTo(projectsEl.value,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.2 }
+      )
+    }
+
+    const cardEls = projectCards.value?.map((c: any) => c?.$el || c).filter(Boolean)
+    if (cardEls?.length) {
+      gsap.fromTo(cardEls,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out', delay: 0.4 }
+      )
     }
   })
 })

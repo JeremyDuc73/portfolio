@@ -35,26 +35,28 @@
             class="project-card group relative flex-shrink-0 w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[35vw] rounded-3xl glass overflow-hidden cursor-pointer"
             @mousemove="handleCardTilt($event, index)"
             @mouseleave="resetCardTilt(index)"
+            @click="navigateTo(`/projects/${project.slug}`)"
           >
             <!-- Project image / gradient -->
             <div class="relative h-64 overflow-hidden">
+              <!-- Always show gradient + number as base -->
+              <div
+                class="absolute inset-0 bg-gradient-to-br transition-all duration-700 group-hover:scale-110"
+                :class="projectGradients[index % projectGradients.length]"
+              />
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="font-display font-bold text-7xl text-white/10 group-hover:text-white/20 transition-all duration-700 group-hover:scale-125">
+                  {{ String(index + 1).padStart(2, '0') }}
+                </span>
+              </div>
+              <!-- Image overlay (hides on error) -->
               <img
                 v-if="project.image"
                 :src="project.image"
                 :alt="project.title"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                @error="($event.target as HTMLImageElement).style.display = 'none'"
               />
-              <template v-else>
-                <div
-                  class="absolute inset-0 bg-gradient-to-br transition-all duration-700 group-hover:scale-110"
-                  :class="projectGradients[index % projectGradients.length]"
-                />
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="font-display font-bold text-7xl text-white/10 group-hover:text-white/20 transition-all duration-700 group-hover:scale-125">
-                    {{ String(index + 1).padStart(2, '0') }}
-                  </span>
-                </div>
-              </template>
               <!-- Overlay on hover -->
               <div class="absolute inset-0 bg-dark-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center gap-4">
                 <a

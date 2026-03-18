@@ -75,7 +75,7 @@
       </aside>
 
       <!-- Main content -->
-      <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex-1 flex flex-col min-h-0">
         <!-- Top bar -->
         <header class="shrink-0 border-b border-white/5 px-6 py-3 flex items-center justify-between bg-dark-900/30">
           <h2 class="font-display font-semibold text-lg text-white">{{ tabs.find(t => t.id === activeTab)?.label }}</h2>
@@ -340,6 +340,19 @@
               </div>
             </div>
 
+            <!-- Experience section -->
+            <div class="admin-card">
+              <div class="admin-card-header"><h3 class="admin-card-title">Section Expérience</h3></div>
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                  <div><label class="admin-label">Label</label><input v-model="contentData.experience_section_label" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre</label><input v-model="contentData.experience_heading" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre accent</label><input v-model="contentData.experience_heading_highlight" class="admin-input" /></div>
+                </div>
+                <div><label class="admin-label">Sous-titre</label><textarea v-model="contentData.experience_subheading" rows="2" class="admin-input" /></div>
+              </div>
+            </div>
+
             <!-- Projects section -->
             <div class="admin-card">
               <div class="admin-card-header"><h3 class="admin-card-title">Section Projets</h3></div>
@@ -349,6 +362,20 @@
                   <div><label class="admin-label">Titre ligne 1</label><input v-model="contentData.projects_heading_line1" class="admin-input" /></div>
                   <div><label class="admin-label">Titre accent</label><input v-model="contentData.projects_heading_highlight" class="admin-input" /></div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Contact section -->
+            <div class="admin-card">
+              <div class="admin-card-header"><h3 class="admin-card-title">Section Contact</h3></div>
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                  <div><label class="admin-label">Label</label><input v-model="contentData.contact_section_label" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre</label><input v-model="contentData.contact_heading" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre accent</label><input v-model="contentData.contact_heading_highlight" class="admin-input" /></div>
+                </div>
+                <div><label class="admin-label">Sous-titre</label><textarea v-model="contentData.contact_subheading" rows="2" class="admin-input" /></div>
+                <div><label class="admin-label">Texte du bouton</label><input v-model="contentData.contact_button_text" class="admin-input" /></div>
               </div>
             </div>
 

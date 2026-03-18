@@ -176,11 +176,12 @@ onMounted(() => {
     )
   }
 
-  // Skill tags stagger animation
-  if (skillTags.value?.length) {
-    gsap.to(skillTags.value, {
+  // Skill tags stagger animation (NuxtLink refs are component instances, extract $el)
+  const tagEls = skillTags.value?.map((t: any) => t?.$el || t).filter(Boolean)
+  if (tagEls?.length) {
+    gsap.to(tagEls, {
       opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: 'power3.out',
-      scrollTrigger: { trigger: skillTags.value[0], start: 'top 90%' },
+      scrollTrigger: { trigger: tagEls[0], start: 'top 90%' },
     })
   }
 })
