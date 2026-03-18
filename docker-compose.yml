@@ -6,8 +6,8 @@ services:
     ports:
       - "11500:3000"
     environment:
-      - NUXT_PUBLIC_API_URL=http://backend:3333
-      - NUXT_PUBLIC_API_BROWSER_URL=http://localhost:11501
+      - NUXT_API_SERVER_URL=http://backend:3333
+      - NUXT_PUBLIC_API_URL=http://localhost:11501
     depends_on:
       - backend
     volumes:

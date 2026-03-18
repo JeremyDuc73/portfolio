@@ -1,12 +1,6 @@
 <template>
   <div class="min-h-screen bg-dark-950 pt-32 pb-20">
     <div class="container mx-auto px-6">
-      <!-- Back link -->
-      <NuxtLink to="/#skills" class="inline-flex items-center gap-2 text-dark-400 hover:text-primary-400 transition-colors mb-10 group">
-        <ArrowLeft :size="18" class="group-hover:-translate-x-1 transition-transform" />
-        <span class="text-sm">Retour aux compétences</span>
-      </NuxtLink>
-
       <div v-if="skill" class="max-w-4xl">
         <!-- Skill header -->
         <div ref="headerEl" class="mb-12">
@@ -88,14 +82,16 @@
 </template>
 
 <script setup lang="ts">
-import { Monitor, Server, Container, ArrowLeft } from 'lucide-vue-next'
+import { Monitor, Server, Container } from 'lucide-vue-next'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const apiUrl = config.public.apiUrl
 
-const { data: skill } = await useFetch<any>(`${apiUrl}/api/skills/${route.params.id}`, {
-  key: `skill-${route.params.id}`,
+const { data: skill } = await useAsyncData(`skill-${route.params.id}`, () => {
+  const url = import.meta.server
+    ? (config.apiServerUrl || config.public.apiUrl)
+    : config.public.apiUrl
+  return $fetch(`${url}/api/skills/${route.params.id}`)
 })
 
 const categoryIcons: Record<string, any> = {

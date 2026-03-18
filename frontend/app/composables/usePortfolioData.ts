@@ -41,32 +41,30 @@ export interface Project {
 
 export type SiteContent = Record<string, string>
 
-export const usePortfolioData = () => {
+const getApiUrl = () => {
   const config = useRuntimeConfig()
-  const apiUrl = config.public.apiUrl
+  return import.meta.server
+    ? (config.apiServerUrl || config.public.apiUrl)
+    : config.public.apiUrl
+}
 
-  const { data: aboutData } = useFetch<AboutData | null>(
-    `${apiUrl}/api/about`,
-    {
-      key: 'portfolio-about',
-      default: () => null,
-    }
+export const usePortfolioData = () => {
+  const { data: aboutData } = useAsyncData<AboutData | null>(
+    'portfolio-about',
+    () => $fetch(`${getApiUrl()}/api/about`),
+    { default: () => null }
   )
 
-  const { data: projectsData } = useFetch<Project[]>(
-    `${apiUrl}/api/projects`,
-    {
-      key: 'portfolio-projects',
-      default: () => [],
-    }
+  const { data: projectsData } = useAsyncData<Project[]>(
+    'portfolio-projects',
+    () => $fetch(`${getApiUrl()}/api/projects`),
+    { default: () => [] }
   )
 
-  const { data: contentData } = useFetch<SiteContent>(
-    `${apiUrl}/api/content`,
-    {
-      key: 'portfolio-content',
-      default: () => ({}),
-    }
+  const { data: contentData } = useAsyncData<SiteContent>(
+    'portfolio-content',
+    () => $fetch(`${getApiUrl()}/api/content`),
+    { default: () => ({}) }
   )
 
   const c = (key: string, fallback: string = '') => {

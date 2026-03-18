@@ -34,9 +34,9 @@
     </div>
 
     <!-- Dashboard -->
-    <div v-else class="flex h-screen">
+    <div v-else>
       <!-- Sidebar -->
-      <aside class="w-64 bg-dark-900/50 border-r border-white/5 flex flex-col shrink-0">
+      <aside class="fixed top-0 left-0 h-screen w-64 bg-dark-900/50 border-r border-white/5 flex flex-col z-40">
         <!-- Logo area -->
         <div class="p-5 border-b border-white/5">
           <h1 class="font-display font-bold text-lg text-white">Admin</h1>
@@ -75,9 +75,9 @@
       </aside>
 
       <!-- Main content -->
-      <div class="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
+      <div class="ml-64">
         <!-- Top bar -->
-        <header class="shrink-0 border-b border-white/5 px-6 py-3 flex items-center justify-between bg-dark-900/30">
+        <header class="sticky top-0 z-30 border-b border-white/5 px-6 py-3 flex items-center justify-between bg-dark-950/80 backdrop-blur-md">
           <h2 class="font-display font-semibold text-lg text-white">{{ tabs.find(t => t.id === activeTab)?.label }}</h2>
           <div class="flex items-center gap-3">
             <button @click="showPasswordModal = true" class="text-dark-500 text-xs hover:text-dark-300 transition-colors">Mot de passe</button>
@@ -85,8 +85,8 @@
           </div>
         </header>
 
-        <!-- Scrollable content -->
-        <main class="flex-1 overflow-y-auto min-h-0">
+        <!-- Content -->
+        <main>
           <div class="max-w-4xl mx-auto px-6 py-8">
 
         <!-- About tab -->

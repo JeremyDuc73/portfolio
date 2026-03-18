@@ -1,12 +1,6 @@
 <template>
   <div class="min-h-screen bg-dark-950 pt-32 pb-20">
     <div class="container mx-auto px-6">
-      <!-- Back link -->
-      <NuxtLink to="/#projects" class="inline-flex items-center gap-2 text-dark-400 hover:text-primary-400 transition-colors mb-10 group">
-        <ArrowLeft :size="18" class="group-hover:-translate-x-1 transition-transform" />
-        <span class="text-sm">Retour aux projets</span>
-      </NuxtLink>
-
       <div v-if="project" class="max-w-4xl">
         <!-- Project header -->
         <div ref="headerEl" class="mb-10">
@@ -99,9 +93,8 @@
       <div v-else class="text-center py-32">
         <h2 class="font-display font-bold text-2xl text-white mb-4">Projet introuvable</h2>
         <p class="text-dark-500 mb-6">Ce projet n'existe pas ou a été supprimé.</p>
-        <NuxtLink to="/#projects" class="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors">
-          <ArrowLeft :size="16" />
-          Retour aux projets
+        <NuxtLink to="/" class="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors">
+          &larr; Retour à l'accueil
         </NuxtLink>
       </div>
     </div>
@@ -109,15 +102,17 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, Github, ExternalLink } from 'lucide-vue-next'
+import { Github, ExternalLink } from 'lucide-vue-next'
 import type { Project } from '~/composables/usePortfolioData'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const apiUrl = config.public.apiUrl
 
-const { data: project } = await useFetch<Project | null>(`${apiUrl}/api/projects/${route.params.slug}`, {
-  key: `project-${route.params.slug}`,
+const { data: project } = await useAsyncData(`project-${route.params.slug}`, () => {
+  const url = import.meta.server
+    ? (config.apiServerUrl || config.public.apiUrl)
+    : config.public.apiUrl
+  return $fetch<Project | null>(`${url}/api/projects/${route.params.slug}`)
 })
 
 const { projectsData } = usePortfolioData()

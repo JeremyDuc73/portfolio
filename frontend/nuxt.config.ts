@@ -1,12 +1,30 @@
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
-    '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
     '@vueuse/nuxt',
     '@nuxt/fonts',
   ],
+
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
+    optimizeDeps: {
+      include: [
+        'gsap',
+        'gsap/ScrollTrigger',
+        'lenis',
+        'lucide-vue-next',
+        'simplex-noise',
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+      ],
+    },
+  },
 
   colorMode: {
     classSuffix: '',
@@ -23,9 +41,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    apiServerUrl: process.env.NUXT_API_SERVER_URL || 'http://localhost:11501',
     public: {
-      apiUrl: process.env.NUXT_PUBLIC_API_BROWSER_URL || 'http://localhost:11501',
-      apiBrowserUrl: process.env.NUXT_PUBLIC_API_BROWSER_URL || 'http://localhost:11501',
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:11501',
     },
   },
 
@@ -51,5 +69,5 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  compatibilityDate: '2024-07-01',
+  compatibilityDate: '2025-07-15',
 })

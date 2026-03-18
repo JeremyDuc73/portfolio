@@ -25,7 +25,7 @@
           v-for="(category, index) in categories"
           :key="category.name"
           ref="skillCards"
-          class="skill-card group relative rounded-3xl glass p-8 opacity-0 overflow-hidden"
+          class="skill-card group relative rounded-3xl glass p-8 overflow-hidden"
           @mousemove="handleGlow($event, index)"
           @mouseleave="clearGlow(index)"
         >
@@ -47,7 +47,7 @@
               :key="skill.name"
               :to="skill.id ? `/skills/${skill.id}` : '#'"
               ref="skillTags"
-              class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-dark-300 text-sm font-medium hover:border-primary-500/30 hover:text-primary-400 transition-all duration-300 opacity-0 translate-y-3 cursor-pointer"
+              class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-dark-300 text-sm font-medium hover:border-primary-500/30 hover:text-primary-400 transition-all duration-300 cursor-pointer"
             >
               {{ skill.name }}
             </NuxtLink>
@@ -150,23 +150,33 @@ const categories = computed(() => {
   return fallbackCategories
 })
 
+const triggers: any[] = []
+
 onMounted(() => {
   const { $gsap } = useNuxtApp()
   if (!$gsap) return
   const gsap = $gsap as any
+  const ScrollTrigger = gsap.ScrollTrigger || (gsap as any).registerPlugin?.()
+
+  // Set initial states
+  gsap.set(header.value, { opacity: 0, y: 40 })
+  if (skillCards.value?.length) gsap.set(skillCards.value, { opacity: 0, y: 60, scale: 0.9, rotateX: 8 })
+  const tagEls = skillTags.value?.map((t: any) => t?.$el || t).filter(Boolean)
+  if (tagEls?.length) gsap.set(tagEls, { opacity: 0, y: 12 })
 
   // Header animation
-  gsap.fromTo(header.value,
+  const t1 = gsap.fromTo(header.value,
     { opacity: 0, y: 40 },
     {
       opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
       scrollTrigger: { trigger: header.value, start: 'top 85%' },
     }
   )
+  if (t1.scrollTrigger) triggers.push(t1.scrollTrigger)
 
   // Cards stagger with scale + rotation
   if (skillCards.value?.length) {
-    gsap.fromTo(skillCards.value,
+    const t2 = gsap.fromTo(skillCards.value,
       { opacity: 0, y: 60, scale: 0.9, rotateX: 8 },
       {
         opacity: 1, y: 0, scale: 1, rotateX: 0,
@@ -174,16 +184,35 @@ onMounted(() => {
         scrollTrigger: { trigger: skillCards.value[0], start: 'top 85%' },
       }
     )
+    if (t2.scrollTrigger) triggers.push(t2.scrollTrigger)
   }
 
-  // Skill tags stagger animation (NuxtLink refs are component instances, extract $el)
-  const tagEls = skillTags.value?.map((t: any) => t?.$el || t).filter(Boolean)
+  // Skill tags stagger animation
   if (tagEls?.length) {
-    gsap.to(tagEls, {
+    const t3 = gsap.to(tagEls, {
       opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: 'power3.out',
       scrollTrigger: { trigger: tagEls[0], start: 'top 90%' },
     })
+    if (t3.scrollTrigger) triggers.push(t3.scrollTrigger)
   }
+})
+
+onBeforeUnmount(() => {
+  // Kill ScrollTriggers and reset element styles so they're visible on remount
+  triggers.forEach(st => st?.kill())
+  triggers.length = 0
+
+  if (header.value) {
+    header.value.style.opacity = '1'
+    header.value.style.transform = ''
+  }
+  skillCards.value?.forEach((el: any) => {
+    if (el) { el.style.opacity = '1'; el.style.transform = '' }
+  })
+  const tagEls = skillTags.value?.map((t: any) => t?.$el || t).filter(Boolean)
+  tagEls?.forEach((el: any) => {
+    if (el) { el.style.opacity = '1'; el.style.transform = '' }
+  })
 })
 </script>
 
