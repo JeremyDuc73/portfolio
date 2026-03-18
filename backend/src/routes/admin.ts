@@ -51,16 +51,16 @@ adminRoutes.get('/skills', adminAuth, (c) => {
 
 adminRoutes.post('/skills', adminAuth, async (c) => {
   const data = await c.req.json()
-  const result = db.prepare('INSERT INTO skills (name, level, category, sort_order) VALUES (?, ?, ?, ?)')
-    .run(data.name, data.level, data.category, data.sort_order || 0)
+  const result = db.prepare('INSERT INTO skills (name, level, category, description, sort_order) VALUES (?, ?, ?, ?, ?)')
+    .run(data.name, data.level, data.category, data.description || '', data.sort_order || 0)
   return c.json({ success: true, id: result.lastInsertRowid })
 })
 
 adminRoutes.put('/skills/:id', adminAuth, async (c) => {
   const id = c.req.param('id')
   const data = await c.req.json()
-  db.prepare('UPDATE skills SET name=?, level=?, category=?, sort_order=? WHERE id=?')
-    .run(data.name, data.level, data.category, data.sort_order || 0, id)
+  db.prepare('UPDATE skills SET name=?, level=?, category=?, description=?, sort_order=? WHERE id=?')
+    .run(data.name, data.level, data.category, data.description || '', data.sort_order || 0, id)
   return c.json({ success: true })
 })
 

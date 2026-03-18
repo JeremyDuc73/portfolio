@@ -36,17 +36,25 @@
             @mousemove="handleCardTilt($event, index)"
             @mouseleave="resetCardTilt(index)"
           >
-            <!-- Project image placeholder with gradient -->
+            <!-- Project image / gradient -->
             <div class="relative h-64 overflow-hidden">
-              <div
-                class="absolute inset-0 bg-gradient-to-br transition-all duration-700 group-hover:scale-110"
-                :class="projectGradients[index % projectGradients.length]"
+              <img
+                v-if="project.image"
+                :src="project.image"
+                :alt="project.title"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div class="absolute inset-0 flex items-center justify-center">
-                <span class="font-display font-bold text-7xl text-white/10 group-hover:text-white/20 transition-all duration-700 group-hover:scale-125">
-                  {{ String(index + 1).padStart(2, '0') }}
-                </span>
-              </div>
+              <template v-else>
+                <div
+                  class="absolute inset-0 bg-gradient-to-br transition-all duration-700 group-hover:scale-110"
+                  :class="projectGradients[index % projectGradients.length]"
+                />
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="font-display font-bold text-7xl text-white/10 group-hover:text-white/20 transition-all duration-700 group-hover:scale-125">
+                    {{ String(index + 1).padStart(2, '0') }}
+                  </span>
+                </div>
+              </template>
               <!-- Overlay on hover -->
               <div class="absolute inset-0 bg-dark-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center gap-4">
                 <a

@@ -99,19 +99,24 @@
 }
 
 /* Page transitions */
-.page-enter-active,
+.page-enter-active {
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .page-leave-active {
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 0.3s cubic-bezier(0.55, 0, 1, 0.45);
 }
 
 .page-enter-from {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(30px) scale(0.98);
+  filter: blur(4px);
 }
 
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-20px) scale(1.01);
+  filter: blur(2px);
 }
 
 /* Nav active link */

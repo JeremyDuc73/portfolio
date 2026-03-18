@@ -42,14 +42,15 @@
 
           <!-- Skills list as tags -->
           <div class="relative flex flex-wrap gap-2">
-            <span
+            <NuxtLink
               v-for="skill in category.skills"
               :key="skill.name"
+              :to="skill.id ? `/skills/${skill.id}` : '#'"
               ref="skillTags"
-              class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-dark-300 text-sm font-medium hover:border-primary-500/30 hover:text-primary-400 transition-all duration-300 opacity-0 translate-y-3"
+              class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-dark-300 text-sm font-medium hover:border-primary-500/30 hover:text-primary-400 transition-all duration-300 opacity-0 translate-y-3 cursor-pointer"
             >
               {{ skill.name }}
-            </span>
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -134,10 +135,10 @@ const fallbackCategories = [
 
 const categories = computed(() => {
   if (aboutData.value?.skills?.length) {
-    const grouped: Record<string, Array<{ name: string }>> = {}
+    const grouped: Record<string, Array<{ name: string; id?: number }>> = {}
     for (const skill of aboutData.value.skills) {
       if (!grouped[skill.category]) grouped[skill.category] = []
-      grouped[skill.category].push({ name: skill.name })
+      grouped[skill.category].push({ name: skill.name, id: skill.id })
     }
     return Object.entries(grouped).map(([name, skills]) => ({
       name,

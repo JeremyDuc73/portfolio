@@ -14,18 +14,18 @@
 
             <!-- Main card -->
             <div class="relative h-full rounded-3xl glass overflow-hidden p-8 flex flex-col justify-between">
-              <!-- Code decoration -->
-              <div class="font-mono text-xs text-dark-600 space-y-1">
-                <p><span class="text-primary-400">const</span> developer = {</p>
-                <p class="pl-4"><span class="text-emerald-400">name</span>: <span class="text-amber-400">'{{ c('about_code_name', 'Jérémy Duc') }}'</span>,</p>
-                <p class="pl-4"><span class="text-emerald-400">role</span>: <span class="text-amber-400">'{{ c('about_code_role', 'Full-Stack Developer') }}'</span>,</p>
-                <p class="pl-4"><span class="text-emerald-400">passion</span>: <span class="text-amber-400">'{{ c('about_code_passion', 'Building elegant web apps') }}'</span>,</p>
-                <p class="pl-4"><span class="text-emerald-400">coffee</span>: <span class="text-amber-400">'{{ c('about_code_coffee', 'always') }}'</span>,</p>
-                <p>};</p>
+              <!-- Profile area -->
+              <div class="flex flex-col items-center text-center">
+                <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-500/30 to-violet-600/30 border border-primary-500/20 flex items-center justify-center mb-4">
+                  <span class="font-display font-bold text-3xl gradient-text">{{ initials }}</span>
+                </div>
+                <h3 class="font-display font-semibold text-lg text-white">{{ aboutData?.name || 'Jérémy Duc' }}</h3>
+                <p class="text-primary-400 text-sm">{{ aboutData?.title || 'Développeur Full-Stack' }}</p>
+                <p class="text-dark-500 text-xs mt-1">{{ aboutData?.location || 'France' }}</p>
               </div>
 
               <!-- Stats with counter animation -->
-              <div class="grid grid-cols-2 gap-4 mt-8">
+              <div class="grid grid-cols-2 gap-4 mt-6">
                 <div v-for="(stat, i) in stats" :key="stat.label" class="text-center p-4 rounded-2xl bg-white/5">
                   <div ref="statValues" class="text-3xl font-display font-bold gradient-text">{{ stat.value }}</div>
                   <div class="text-dark-500 text-sm mt-1">{{ stat.label }}</div>
@@ -80,6 +80,11 @@ const statValues = ref<HTMLElement[]>([])
 const tagEls = ref<HTMLElement[]>([])
 
 const { aboutData, c } = usePortfolioData()
+
+const initials = computed(() => {
+  const name = aboutData.value?.name || 'Jérémy Duc'
+  return name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
+})
 
 const fallbackBio = `Passionné par le développement web depuis plus de 5 ans, je me spécialise dans la création d'applications web modernes et performantes. Mon approche allie rigueur technique et sens du design.
 

@@ -32,6 +32,7 @@ export function initDB() {
       name TEXT NOT NULL,
       level INTEGER NOT NULL DEFAULT 50,
       category TEXT NOT NULL,
+      description TEXT NOT NULL DEFAULT '',
       sort_order INTEGER NOT NULL DEFAULT 0
     );
 
@@ -209,6 +210,13 @@ export function initDB() {
     // Simple hash for default password "admin" - user should change this
     const hash = createHash('sha256').update('admin').digest('hex')
     db.prepare('INSERT INTO admin (id, password_hash) VALUES (1, ?)').run(hash)
+  }
+
+  // Migration: add description column to skills if missing
+  try {
+    db.prepare("SELECT description FROM skills LIMIT 1").get()
+  } catch {
+    db.prepare("ALTER TABLE skills ADD COLUMN description TEXT NOT NULL DEFAULT ''").run()
   }
 
   console.log('✅ Database initialized')

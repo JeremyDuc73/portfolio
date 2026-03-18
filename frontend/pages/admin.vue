@@ -34,91 +34,104 @@
     </div>
 
     <!-- Dashboard -->
-    <div v-else>
-      <!-- Top bar -->
-      <header class="border-b border-white/5 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <h1 class="font-display font-bold text-xl">Admin Dashboard</h1>
-          <a href="/" class="text-dark-500 text-sm hover:text-primary-400 transition-colors">&larr; Voir le site</a>
+    <div v-else class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-dark-900/50 border-r border-white/5 flex flex-col shrink-0">
+        <!-- Logo area -->
+        <div class="p-5 border-b border-white/5">
+          <h1 class="font-display font-bold text-lg text-white">Admin</h1>
+          <p class="text-dark-500 text-xs mt-0.5">Gestion du portfolio</p>
         </div>
-        <div class="flex items-center gap-4">
-          <!-- Maintenance toggle -->
-          <button
-            @click="toggleMaintenance"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-            :class="maintenanceMode ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'glass text-dark-400 hover:text-dark-300'"
-          >
-            <span class="w-2 h-2 rounded-full" :class="maintenanceMode ? 'bg-amber-400' : 'bg-emerald-400'" />
-            {{ maintenanceMode ? 'Maintenance activée' : 'Site en ligne' }}
-          </button>
-          <button @click="showPasswordModal = true" class="text-dark-400 text-sm hover:text-primary-400 transition-colors">
-            Changer mot de passe
-          </button>
-          <button @click="logout" class="px-4 py-2 rounded-lg glass text-sm text-dark-300 hover:text-white transition-colors">
-            Déconnexion
-          </button>
-        </div>
-      </header>
 
-      <!-- Tabs -->
-      <div class="border-b border-white/5 px-6">
-        <nav class="flex gap-1">
+        <!-- Nav -->
+        <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
           <button
             v-for="tab in tabs"
             :key="tab.id"
             @click="activeTab = tab.id"
-            class="px-4 py-3 text-sm font-medium transition-colors relative"
-            :class="activeTab === tab.id ? 'text-primary-400' : 'text-dark-500 hover:text-dark-300'"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
+            :class="activeTab === tab.id ? 'bg-primary-500/10 text-primary-400' : 'text-dark-400 hover:bg-white/5 hover:text-dark-200'"
           >
+            <component :is="tab.icon" :size="18" />
             {{ tab.label }}
-            <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500" />
           </button>
         </nav>
-      </div>
 
-      <!-- Content area -->
-      <main class="max-w-5xl mx-auto px-6 py-8">
+        <!-- Sidebar footer -->
+        <div class="p-3 border-t border-white/5 space-y-1">
+          <button
+            @click="toggleMaintenance"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
+            :class="maintenanceMode ? 'bg-amber-500/10 text-amber-400' : 'text-dark-400 hover:bg-white/5'"
+          >
+            <span class="w-2 h-2 rounded-full shrink-0" :class="maintenanceMode ? 'bg-amber-400' : 'bg-emerald-400'" />
+            {{ maintenanceMode ? 'Maintenance ON' : 'Site en ligne' }}
+          </button>
+          <a href="/" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-dark-400 hover:bg-white/5 hover:text-dark-200 transition-all">
+            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+            Voir le site
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top bar -->
+        <header class="shrink-0 border-b border-white/5 px-6 py-3 flex items-center justify-between bg-dark-900/30">
+          <h2 class="font-display font-semibold text-lg text-white">{{ tabs.find(t => t.id === activeTab)?.label }}</h2>
+          <div class="flex items-center gap-3">
+            <button @click="showPasswordModal = true" class="text-dark-500 text-xs hover:text-dark-300 transition-colors">Mot de passe</button>
+            <button @click="logout" class="px-3 py-1.5 rounded-lg text-xs text-dark-400 hover:bg-white/5 hover:text-white transition-all">Déconnexion</button>
+          </div>
+        </header>
+
+        <!-- Scrollable content -->
+        <main class="flex-1 overflow-y-auto">
+          <div class="max-w-4xl mx-auto px-6 py-8">
+
         <!-- About tab -->
         <div v-if="activeTab === 'about'">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="font-display font-bold text-2xl">À propos</h2>
-            <button @click="saveAbout" :disabled="saving" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium transition-colors disabled:opacity-50">
-              {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
-            </button>
-          </div>
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Nom</label>
-                <input v-model="aboutData.name" class="admin-input" />
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Titre</label>
-                <input v-model="aboutData.title" class="admin-input" />
-              </div>
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Informations personnelles</h3>
+              <button @click="saveAbout" :disabled="saving" class="admin-btn-primary">
+                {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+              </button>
             </div>
-            <div>
-              <label class="block text-dark-400 text-sm mb-1">Bio</label>
-              <textarea v-model="aboutData.bio" rows="4" class="admin-input" />
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Localisation</label>
-                <input v-model="aboutData.location" class="admin-input" />
+            <div class="admin-card-body space-y-5">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="admin-label">Nom</label>
+                  <input v-model="aboutData.name" class="admin-input" />
+                </div>
+                <div>
+                  <label class="admin-label">Titre</label>
+                  <input v-model="aboutData.title" class="admin-input" />
+                </div>
               </div>
               <div>
-                <label class="block text-dark-400 text-sm mb-1">Email</label>
-                <input v-model="aboutData.email" class="admin-input" />
+                <label class="admin-label">Bio</label>
+                <textarea v-model="aboutData.bio" rows="4" class="admin-input" />
               </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">GitHub URL</label>
-                <input v-model="aboutData.github" class="admin-input" />
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="admin-label">Localisation</label>
+                  <input v-model="aboutData.location" class="admin-input" />
+                </div>
+                <div>
+                  <label class="admin-label">Email</label>
+                  <input v-model="aboutData.email" class="admin-input" />
+                </div>
               </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">LinkedIn URL</label>
-                <input v-model="aboutData.linkedin" class="admin-input" />
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="admin-label">GitHub URL</label>
+                  <input v-model="aboutData.github" class="admin-input" />
+                </div>
+                <div>
+                  <label class="admin-label">LinkedIn URL</label>
+                  <input v-model="aboutData.linkedin" class="admin-input" />
+                </div>
               </div>
             </div>
           </div>
@@ -127,28 +140,38 @@
         <!-- Skills tab -->
         <div v-if="activeTab === 'skills'">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="font-display font-bold text-2xl">Compétences</h2>
-            <button @click="addSkill" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium transition-colors">
-              + Ajouter une compétence
-            </button>
+            <p class="text-dark-500 text-sm">{{ skillsData.length }} compétence(s)</p>
+            <button @click="addSkill" class="admin-btn-primary">+ Ajouter</button>
           </div>
-          <div class="space-y-3">
-            <div v-for="(skill, i) in skillsData" :key="skill.id || i" class="flex items-center gap-4 p-4 rounded-xl glass">
-              <div class="flex-1">
-                <label class="block text-dark-500 text-xs mb-1">Nom</label>
-                <input v-model="skill.name" placeholder="Ex : Vue.js" class="admin-input" />
-              </div>
-              <div class="w-40">
-                <label class="block text-dark-500 text-xs mb-1">Catégorie</label>
-                <select v-model="skill.category" class="admin-input">
-                  <option value="Frontend">Frontend</option>
-                  <option value="Backend">Backend</option>
-                  <option value="DevOps">DevOps</option>
-                </select>
-              </div>
-              <div class="flex items-end gap-2 pt-4">
-                <button @click="saveSkill(skill)" class="px-3 py-2 rounded-lg bg-emerald-600/20 text-emerald-400 text-xs hover:bg-emerald-600/30 transition-colors">Enregistrer</button>
-                <button @click="deleteSkill(skill, i)" class="px-3 py-2 rounded-lg bg-red-600/20 text-red-400 text-xs hover:bg-red-600/30 transition-colors">Supprimer</button>
+          <div class="space-y-4">
+            <div v-for="(skill, i) in skillsData" :key="skill.id || i" class="admin-card">
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                  <div>
+                    <label class="admin-label">Nom</label>
+                    <input v-model="skill.name" placeholder="Ex : Vue.js" class="admin-input" />
+                  </div>
+                  <div>
+                    <label class="admin-label">Catégorie</label>
+                    <select v-model="skill.category" class="admin-select">
+                      <option value="Frontend">Frontend</option>
+                      <option value="Backend">Backend</option>
+                      <option value="DevOps">DevOps</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="admin-label">Ordre</label>
+                    <input v-model.number="skill.sort_order" type="number" placeholder="0" class="admin-input" />
+                  </div>
+                </div>
+                <div>
+                  <label class="admin-label">Description (visible sur la page détail)</label>
+                  <textarea v-model="skill.description" rows="2" placeholder="Décrivez votre expérience avec cette compétence..." class="admin-input" />
+                </div>
+                <div class="flex justify-end gap-2 pt-1 border-t border-white/5">
+                  <button @click="deleteSkill(skill, i)" class="admin-btn-danger mt-3">Supprimer</button>
+                  <button @click="saveSkill(skill)" class="admin-btn-success mt-3">Enregistrer</button>
+                </div>
               </div>
             </div>
           </div>
@@ -157,34 +180,34 @@
         <!-- Experience tab -->
         <div v-if="activeTab === 'experience'">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="font-display font-bold text-2xl">Expérience</h2>
-            <button @click="addExperience" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium transition-colors">
-              + Ajouter une expérience
-            </button>
+            <p class="text-dark-500 text-sm">{{ experienceData.length }} expérience(s)</p>
+            <button @click="addExperience" class="admin-btn-primary">+ Ajouter</button>
           </div>
           <div class="space-y-4">
-            <div v-for="(exp, i) in experienceData" :key="exp.id || i" class="p-5 rounded-xl glass space-y-4">
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">Poste</label>
-                  <input v-model="exp.role" placeholder="Ex : Développeur Full-Stack" class="admin-input" />
+            <div v-for="(exp, i) in experienceData" :key="exp.id || i" class="admin-card">
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                  <div>
+                    <label class="admin-label">Poste</label>
+                    <input v-model="exp.role" placeholder="Ex : Développeur Full-Stack" class="admin-input" />
+                  </div>
+                  <div>
+                    <label class="admin-label">Entreprise</label>
+                    <input v-model="exp.company" placeholder="Ex : Acme Inc." class="admin-input" />
+                  </div>
+                  <div>
+                    <label class="admin-label">Période</label>
+                    <input v-model="exp.period" placeholder="Ex : 2022 - 2024" class="admin-input" />
+                  </div>
                 </div>
                 <div>
-                  <label class="block text-dark-500 text-xs mb-1">Entreprise</label>
-                  <input v-model="exp.company" placeholder="Ex : Acme Inc." class="admin-input" />
+                  <label class="admin-label">Description</label>
+                  <textarea v-model="exp.description" placeholder="Décrivez vos missions principales..." rows="3" class="admin-input" />
                 </div>
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">Période</label>
-                  <input v-model="exp.period" placeholder="Ex : 2022 - 2024" class="admin-input" />
+                <div class="flex justify-end gap-2 pt-1 border-t border-white/5">
+                  <button @click="deleteExperience(exp, i)" class="admin-btn-danger mt-3">Supprimer</button>
+                  <button @click="saveExperience(exp)" class="admin-btn-success mt-3">Enregistrer</button>
                 </div>
-              </div>
-              <div>
-                <label class="block text-dark-500 text-xs mb-1">Description</label>
-                <textarea v-model="exp.description" placeholder="Décrivez vos missions principales..." rows="3" class="admin-input" />
-              </div>
-              <div class="flex justify-end gap-2 pt-1">
-                <button @click="saveExperience(exp)" class="px-4 py-2 rounded-lg bg-emerald-600/20 text-emerald-400 text-sm hover:bg-emerald-600/30 transition-colors">Enregistrer</button>
-                <button @click="deleteExperience(exp, i)" class="px-4 py-2 rounded-lg bg-red-600/20 text-red-400 text-sm hover:bg-red-600/30 transition-colors">Supprimer</button>
               </div>
             </div>
           </div>
@@ -193,60 +216,66 @@
         <!-- Projects tab -->
         <div v-if="activeTab === 'projects'">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="font-display font-bold text-2xl">Projets</h2>
-            <button @click="addProject" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium transition-colors">
-              + Ajouter un projet
-            </button>
+            <p class="text-dark-500 text-sm">{{ projectsData.length }} projet(s)</p>
+            <button @click="addProject" class="admin-btn-primary">+ Ajouter</button>
           </div>
-          <div class="space-y-6">
-            <div v-for="(project, i) in projectsData" :key="project.id || i" class="p-5 rounded-xl glass space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">Titre du projet</label>
-                  <input v-model="project.title" placeholder="Ex : Mon application" class="admin-input" />
+          <div class="space-y-4">
+            <div v-for="(project, i) in projectsData" :key="project.id || i" class="admin-card">
+              <div class="admin-card-body space-y-4">
+                <!-- Image preview -->
+                <div v-if="project.image" class="rounded-lg overflow-hidden h-32 bg-dark-800">
+                  <img :src="project.image" :alt="project.title" class="w-full h-full object-cover" />
                 </div>
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">Identifiant (slug)</label>
-                  <input v-model="project.slug" placeholder="Ex : mon-application" class="admin-input" />
-                </div>
-              </div>
-              <div>
-                <label class="block text-dark-500 text-xs mb-1">Description</label>
-                <textarea v-model="project.description" placeholder="Décrivez le projet en quelques lignes..." rows="3" class="admin-input" />
-              </div>
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">Lien GitHub</label>
-                  <input v-model="project.github" placeholder="https://github.com/..." class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">Lien démo</label>
-                  <input v-model="project.demo" placeholder="https://..." class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">URL de l'image</label>
-                  <input v-model="project.image" placeholder="/images/projet.jpg" class="admin-input" />
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-500 text-xs mb-1">Technologies (séparées par des virgules)</label>
-                  <input v-model="project.tagsString" placeholder="Vue.js, Node.js, TailwindCSS" class="admin-input" />
-                </div>
-                <div class="flex items-end gap-4">
-                  <label class="flex items-center gap-2 text-sm text-dark-400 pb-2">
-                    <input type="checkbox" v-model="project.featured" class="accent-primary-500 w-4 h-4" />
-                    Mis en avant
-                  </label>
-                  <div class="flex-1">
-                    <label class="block text-dark-500 text-xs mb-1">Ordre d'affichage</label>
-                    <input v-model.number="project.sort_order" type="number" placeholder="0" class="admin-input" />
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="admin-label">Titre du projet</label>
+                    <input v-model="project.title" placeholder="Ex : Mon application" class="admin-input" />
+                  </div>
+                  <div>
+                    <label class="admin-label">Identifiant (slug)</label>
+                    <input v-model="project.slug" placeholder="Ex : mon-application" class="admin-input" />
                   </div>
                 </div>
-              </div>
-              <div class="flex justify-end gap-2 pt-1">
-                <button @click="saveProject(project)" class="px-4 py-2 rounded-lg bg-emerald-600/20 text-emerald-400 text-sm hover:bg-emerald-600/30 transition-colors">Enregistrer</button>
-                <button @click="deleteProject(project, i)" class="px-4 py-2 rounded-lg bg-red-600/20 text-red-400 text-sm hover:bg-red-600/30 transition-colors">Supprimer</button>
+                <div>
+                  <label class="admin-label">Description</label>
+                  <textarea v-model="project.description" placeholder="Décrivez le projet en quelques lignes..." rows="3" class="admin-input" />
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                  <div>
+                    <label class="admin-label">Lien GitHub</label>
+                    <input v-model="project.github" placeholder="https://github.com/..." class="admin-input" />
+                  </div>
+                  <div>
+                    <label class="admin-label">Lien démo</label>
+                    <input v-model="project.demo" placeholder="https://..." class="admin-input" />
+                  </div>
+                  <div>
+                    <label class="admin-label">URL de l'image</label>
+                    <input v-model="project.image" placeholder="https://... ou /images/..." class="admin-input" />
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="admin-label">Technologies (séparées par des virgules)</label>
+                    <input v-model="project.tagsString" placeholder="Vue.js, Node.js, TailwindCSS" class="admin-input" />
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="admin-label">Ordre</label>
+                      <input v-model.number="project.sort_order" type="number" placeholder="0" class="admin-input" />
+                    </div>
+                    <div class="flex items-end pb-1">
+                      <label class="flex items-center gap-2 text-sm text-dark-400 cursor-pointer select-none">
+                        <input type="checkbox" v-model="project.featured" class="accent-primary-500 w-4 h-4 rounded" />
+                        Mis en avant
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-1 border-t border-white/5">
+                  <button @click="deleteProject(project, i)" class="admin-btn-danger mt-3">Supprimer</button>
+                  <button @click="saveProject(project)" class="admin-btn-success mt-3">Enregistrer</button>
+                </div>
               </div>
             </div>
           </div>
@@ -254,227 +283,132 @@
 
         <!-- Content tab -->
         <div v-if="activeTab === 'content'">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="font-display font-bold text-2xl">Contenu du site</h2>
-            <button @click="saveContent" :disabled="saving" class="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium transition-colors disabled:opacity-50">
+          <div class="flex items-center justify-end mb-6">
+            <button @click="saveContent" :disabled="saving" class="admin-btn-primary">
               {{ saving ? 'Enregistrement...' : 'Enregistrer tout' }}
             </button>
           </div>
 
-          <!-- Hero section -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Hero</h3>
-            <div class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Prénom</label>
-                  <input v-model="contentData.hero_first_name" class="admin-input" />
+          <div class="space-y-6">
+            <!-- Hero section -->
+            <div class="admin-card">
+              <div class="admin-card-header"><h3 class="admin-card-title">Section Hero</h3></div>
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="admin-label">Prénom</label><input v-model="contentData.hero_first_name" class="admin-input" /></div>
+                  <div><label class="admin-label">Nom</label><input v-model="contentData.hero_last_name" class="admin-input" /></div>
                 </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Nom</label>
-                  <input v-model="contentData.hero_last_name" class="admin-input" />
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="admin-label">Badge texte</label><input v-model="contentData.hero_badge_text" class="admin-input" /></div>
+                  <div><label class="admin-label">Sous-titre</label><input v-model="contentData.hero_subtitle" class="admin-input" /></div>
                 </div>
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Badge texte</label>
-                  <input v-model="contentData.hero_badge_text" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Sous-titre (tapé)</label>
-                  <input v-model="contentData.hero_subtitle" class="admin-input" />
-                </div>
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Description</label>
-                <textarea v-model="contentData.hero_description" rows="2" class="admin-input" />
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Bouton principal</label>
-                  <input v-model="contentData.hero_cta_primary" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Bouton secondaire</label>
-                  <input v-model="contentData.hero_cta_secondary" class="admin-input" />
+                <div><label class="admin-label">Description</label><textarea v-model="contentData.hero_description" rows="2" class="admin-input" /></div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="admin-label">Bouton principal</label><input v-model="contentData.hero_cta_primary" class="admin-input" /></div>
+                  <div><label class="admin-label">Bouton secondaire</label><input v-model="contentData.hero_cta_secondary" class="admin-input" /></div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- About section -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section À propos</h3>
-            <div class="space-y-4">
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Label section</label>
-                  <input v-model="contentData.about_section_label" class="admin-input" />
+            <!-- About section -->
+            <div class="admin-card">
+              <div class="admin-card-header"><h3 class="admin-card-title">Section À propos</h3></div>
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                  <div><label class="admin-label">Label section</label><input v-model="contentData.about_section_label" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre ligne 1</label><input v-model="contentData.about_heading_line1" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre accent</label><input v-model="contentData.about_heading_highlight" class="admin-input" /></div>
                 </div>
                 <div>
-                  <label class="block text-dark-400 text-sm mb-1">Titre ligne 1</label>
-                  <input v-model="contentData.about_heading_line1" class="admin-input" />
+                  <label class="admin-label">Statistiques (JSON)</label>
+                  <textarea v-model="contentStatsJson" rows="4" class="admin-input font-mono text-xs" />
+                  <p class="text-dark-600 text-xs mt-1">Format : [{"value":"5+","label":"Années d'exp."}]</p>
                 </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
-                  <input v-model="contentData.about_heading_highlight" class="admin-input" />
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Code — Nom</label>
-                  <input v-model="contentData.about_code_name" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Code — Rôle</label>
-                  <input v-model="contentData.about_code_role" class="admin-input" />
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Code — Passion</label>
-                  <input v-model="contentData.about_code_passion" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Code — Café</label>
-                  <input v-model="contentData.about_code_coffee" class="admin-input" />
-                </div>
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Statistiques (JSON)</label>
-                <textarea v-model="contentStatsJson" rows="4" class="admin-input font-mono text-xs" />
-                <p class="text-dark-600 text-xs mt-1">Format : [{"value":"5+","label":"Années d'exp."}]</p>
               </div>
             </div>
-          </div>
 
-          <!-- Skills section -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Compétences</h3>
-            <div class="space-y-4">
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Label section</label>
-                  <input v-model="contentData.skills_section_label" class="admin-input" />
+            <!-- Skills section -->
+            <div class="admin-card">
+              <div class="admin-card-header"><h3 class="admin-card-title">Section Compétences</h3></div>
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                  <div><label class="admin-label">Label</label><input v-model="contentData.skills_section_label" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre</label><input v-model="contentData.skills_heading" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre accent</label><input v-model="contentData.skills_heading_highlight" class="admin-input" /></div>
                 </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Titre</label>
-                  <input v-model="contentData.skills_heading" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
-                  <input v-model="contentData.skills_heading_highlight" class="admin-input" />
-                </div>
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Sous-titre</label>
-                <textarea v-model="contentData.skills_subheading" rows="2" class="admin-input" />
+                <div><label class="admin-label">Sous-titre</label><textarea v-model="contentData.skills_subheading" rows="2" class="admin-input" /></div>
               </div>
             </div>
-          </div>
 
-          <!-- Projects section -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Projets</h3>
-            <div class="grid grid-cols-3 gap-4">
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Label section</label>
-                <input v-model="contentData.projects_section_label" class="admin-input" />
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Titre ligne 1</label>
-                <input v-model="contentData.projects_heading_line1" class="admin-input" />
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
-                <input v-model="contentData.projects_heading_highlight" class="admin-input" />
+            <!-- Projects section -->
+            <div class="admin-card">
+              <div class="admin-card-header"><h3 class="admin-card-title">Section Projets</h3></div>
+              <div class="admin-card-body">
+                <div class="grid grid-cols-3 gap-4">
+                  <div><label class="admin-label">Label</label><input v-model="contentData.projects_section_label" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre ligne 1</label><input v-model="contentData.projects_heading_line1" class="admin-input" /></div>
+                  <div><label class="admin-label">Titre accent</label><input v-model="contentData.projects_heading_highlight" class="admin-input" /></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Contact section -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Section Contact</h3>
-            <div class="space-y-4">
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Label section</label>
-                  <input v-model="contentData.contact_section_label" class="admin-input" />
+            <!-- Navbar / Footer -->
+            <div class="admin-card">
+              <div class="admin-card-header"><h3 class="admin-card-title">Navbar &amp; Footer</h3></div>
+              <div class="admin-card-body space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                  <div><label class="admin-label">Logo initiales</label><input v-model="contentData.navbar_logo_initials" class="admin-input" /></div>
+                  <div><label class="admin-label">Logo texte</label><input v-model="contentData.navbar_logo_text" class="admin-input" /></div>
+                  <div><label class="admin-label">Logo suffixe</label><input v-model="contentData.navbar_logo_suffix" class="admin-input" /></div>
                 </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Titre</label>
-                  <input v-model="contentData.contact_heading" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Titre accent</label>
-                  <input v-model="contentData.contact_heading_highlight" class="admin-input" />
-                </div>
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Sous-titre</label>
-                <textarea v-model="contentData.contact_subheading" rows="2" class="admin-input" />
-              </div>
-              <div>
-                <label class="block text-dark-400 text-sm mb-1">Texte du bouton</label>
-                <input v-model="contentData.contact_button_text" class="admin-input" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Navbar / Footer -->
-          <div class="mb-8">
-            <h3 class="text-lg font-semibold text-primary-400 mb-4 border-b border-white/10 pb-2">Navbar &amp; Footer</h3>
-            <div class="space-y-4">
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Logo initiales</label>
-                  <input v-model="contentData.navbar_logo_initials" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Logo texte</label>
-                  <input v-model="contentData.navbar_logo_text" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Logo suffixe</label>
-                  <input v-model="contentData.navbar_logo_suffix" class="admin-input" />
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Copyright nom</label>
-                  <input v-model="contentData.footer_copyright_name" class="admin-input" />
-                </div>
-                <div>
-                  <label class="block text-dark-400 text-sm mb-1">Fait par</label>
-                  <input v-model="contentData.footer_made_by" class="admin-input" />
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="admin-label">Copyright nom</label><input v-model="contentData.footer_copyright_name" class="admin-input" /></div>
+                  <div><label class="admin-label">Fait par</label><input v-model="contentData.footer_made_by" class="admin-input" /></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Status toast -->
-        <div v-if="toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl text-sm font-medium animate-pulse z-50" :class="toast.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'">
+          </div>
+        </main>
+      </div>
+
+      <!-- Toast -->
+      <Transition name="toast">
+        <div v-if="toast" class="fixed bottom-6 right-6 px-5 py-3 rounded-xl text-sm font-medium shadow-lg z-50 flex items-center gap-2"
+          :class="toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'">
+          <svg v-if="toast.type === 'success'" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
           {{ toast.message }}
         </div>
-      </main>
+      </Transition>
 
       <!-- Password change modal -->
-      <div v-if="showPasswordModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click.self="showPasswordModal = false">
-        <div class="w-full max-w-sm p-6 rounded-2xl glass">
-          <h3 class="font-display font-bold text-lg mb-4">Changer le mot de passe</h3>
-          <input v-model="newPassword" type="password" placeholder="Nouveau mot de passe" class="admin-input mb-3" />
-          <div class="flex gap-2">
-            <button @click="changePassword" class="flex-1 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium transition-colors">Changer</button>
-            <button @click="showPasswordModal = false" class="flex-1 py-2 rounded-lg glass text-sm transition-colors">Annuler</button>
+      <Transition name="modal">
+        <div v-if="showPasswordModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showPasswordModal = false">
+          <div class="w-full max-w-sm admin-card">
+            <div class="admin-card-header"><h3 class="admin-card-title">Changer le mot de passe</h3></div>
+            <div class="admin-card-body space-y-4">
+              <div>
+                <label class="admin-label">Nouveau mot de passe</label>
+                <input v-model="newPassword" type="password" placeholder="Minimum 4 caractères" class="admin-input" />
+              </div>
+              <div class="flex gap-2 pt-2">
+                <button @click="changePassword" class="flex-1 admin-btn-primary">Confirmer</button>
+                <button @click="showPasswordModal = false" class="flex-1 px-4 py-2 rounded-lg border border-white/10 text-sm text-dark-300 hover:bg-white/5 transition-all">Annuler</button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </Transition>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { FileText, User, Layers, Briefcase, FolderKanban } from 'lucide-vue-next'
+
 definePageMeta({ layout: false })
 
 const config = useRuntimeConfig()
@@ -494,11 +428,11 @@ const maintenanceMode = ref(false)
 const maintenanceMessage = ref('Site en maintenance. Revenez bientôt.')
 
 const tabs = [
-  { id: 'content', label: 'Contenu du site' },
-  { id: 'about', label: 'À propos' },
-  { id: 'skills', label: 'Compétences' },
-  { id: 'experience', label: 'Expérience' },
-  { id: 'projects', label: 'Projets' },
+  { id: 'content', label: 'Contenu du site', icon: FileText },
+  { id: 'about', label: 'À propos', icon: User },
+  { id: 'skills', label: 'Compétences', icon: Layers },
+  { id: 'experience', label: 'Expérience', icon: Briefcase },
+  { id: 'projects', label: 'Projets', icon: FolderKanban },
 ]
 
 // Data
@@ -789,8 +723,85 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* ─── Inputs ──────────────────────────────── */
 .admin-input {
-  @apply w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white text-sm placeholder-dark-600 focus:border-primary-500/50 focus:outline-none focus:ring-1 focus:ring-primary-500/25 transition-all;
+  @apply w-full px-3 py-2.5 rounded-lg border border-white/10 bg-dark-900 text-white text-sm placeholder-dark-600 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all;
+}
+
+.admin-select {
+  @apply w-full px-3 py-2.5 rounded-lg border border-white/10 bg-dark-900 text-white text-sm focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all appearance-none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.admin-select option {
+  background-color: #1a1a2e;
+  color: #fff;
+  padding: 8px;
+}
+
+/* ─── Labels ──────────────────────────────── */
+.admin-label {
+  @apply block text-dark-400 text-xs font-medium mb-1.5 uppercase tracking-wider;
+}
+
+/* ─── Cards ───────────────────────────────── */
+.admin-card {
+  @apply rounded-xl border border-white/5 bg-dark-900/50 overflow-hidden;
+}
+.admin-card-header {
+  @apply px-5 py-3.5 border-b border-white/5 flex items-center justify-between bg-dark-900/30;
+}
+.admin-card-title {
+  @apply text-sm font-semibold text-dark-200;
+}
+.admin-card-body {
+  @apply px-5 py-5;
+}
+
+/* ─── Buttons ─────────────────────────────── */
+.admin-btn-primary {
+  @apply px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-sm font-medium transition-all disabled:opacity-50 shadow-sm shadow-primary-600/20;
+}
+.admin-btn-success {
+  @apply px-4 py-2 rounded-lg bg-emerald-600/20 text-emerald-400 text-sm font-medium hover:bg-emerald-600/30 border border-emerald-500/10 transition-all;
+}
+.admin-btn-danger {
+  @apply px-4 py-2 rounded-lg bg-red-600/10 text-red-400 text-sm font-medium hover:bg-red-600/20 border border-red-500/10 transition-all;
+}
+
+/* ─── Transitions ─────────────────────────── */
+.toast-enter-active {
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toast-leave-active {
+  transition: all 0.2s ease-in;
+}
+.toast-enter-from {
+  opacity: 0;
+  transform: translateY(16px) scale(0.95);
+}
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.modal-enter-active {
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-leave-active {
+  transition: all 0.2s ease-in;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+.modal-enter-from .admin-card,
+.modal-leave-to .admin-card {
+  transform: scale(0.95) translateY(10px);
 }
 </style>
 
