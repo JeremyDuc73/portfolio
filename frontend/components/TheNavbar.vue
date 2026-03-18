@@ -93,7 +93,6 @@ const navLinks = [
   { label: 'Compétences', href: '#skills' },
   { label: 'Expérience', href: '#experience' },
   { label: 'Projets', href: '#projects' },
-  { label: 'Contact', href: '#contact' },
 ]
 
 const scrollToSection = (href: string) => {

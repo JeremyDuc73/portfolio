@@ -3,7 +3,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { initDB, db } from './db/index.js'
 import { projectsRoutes } from './routes/projects.js'
-import { contactRoutes } from './routes/contact.js'
+// contact routes removed
 import { aboutRoutes } from './routes/about.js'
 import { contentRoutes } from './routes/content.js'
 import { adminRoutes } from './routes/admin.js'
@@ -49,7 +49,6 @@ app.get('/api/skills/:id', (c) => {
 
 // API routes
 app.route('/api/projects', projectsRoutes)
-app.route('/api/contact', contactRoutes)
 app.route('/api/about', aboutRoutes)
 app.route('/api/content', contentRoutes)
 app.route('/api/admin', adminRoutes)
