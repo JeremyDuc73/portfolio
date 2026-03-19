@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@vueuse/nuxt',
     '@nuxt/fonts',
+    '@nuxt/eslint',
   ],
 
   vite: {
