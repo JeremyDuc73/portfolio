@@ -52,7 +52,7 @@ adminRoutes.get('/skills', adminAuth, (c) => {
 adminRoutes.post('/skills', adminAuth, async (c) => {
   const data = await c.req.json()
   const result = db.prepare('INSERT INTO skills (name, level, category, description, sort_order) VALUES (?, ?, ?, ?, ?)')
-    .run(data.name, data.level, data.category, data.description || '', data.sort_order || 0)
+    .run(data.name, data.level ?? 50, data.category, data.description || '', data.sort_order || 0)
   return c.json({ success: true, id: result.lastInsertRowid })
 })
 
@@ -60,7 +60,7 @@ adminRoutes.put('/skills/:id', adminAuth, async (c) => {
   const id = c.req.param('id')
   const data = await c.req.json()
   db.prepare('UPDATE skills SET name=?, level=?, category=?, description=?, sort_order=? WHERE id=?')
-    .run(data.name, data.level, data.category, data.description || '', data.sort_order || 0, id)
+    .run(data.name, data.level ?? 50, data.category, data.description || '', data.sort_order || 0, id)
   return c.json({ success: true })
 })
 
@@ -139,6 +139,29 @@ adminRoutes.put('/content', adminAuth, async (c) => {
   })
   updateMany(Object.entries(data))
   return c.json({ success: true })
+})
+
+// ─── IMAGE UPLOAD ───────────────────────────────────────
+adminRoutes.post('/upload', adminAuth, async (c) => {
+  const body = await c.req.parseBody()
+  const file = body['file']
+  if (!file || typeof file === 'string') {
+    return c.json({ error: 'Fichier manquant' }, 400)
+  }
+  const f = file as File
+  const ext = f.name.split('.').pop()?.toLowerCase() || 'png'
+  const allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']
+  if (!allowed.includes(ext)) {
+    return c.json({ error: 'Format non supporté (jpg, png, gif, webp, svg)' }, 400)
+  }
+  const { mkdirSync, writeFileSync } = await import('node:fs')
+  const { join } = await import('node:path')
+  const uploadDir = join(process.cwd(), 'data', 'uploads')
+  mkdirSync(uploadDir, { recursive: true })
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+  const buffer = Buffer.from(await f.arrayBuffer())
+  writeFileSync(join(uploadDir, filename), buffer)
+  return c.json({ success: true, url: `/api/uploads/${filename}` })
 })
 
 // ─── SETTINGS / MAINTENANCE ─────────────────────────────

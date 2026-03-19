@@ -263,24 +263,6 @@
               </div>
             </div>
 
-            <!-- ═══════ HOME: CONTACT ═══════ -->
-            <div v-if="activeTab === 'home-contact'" class="space-y-6">
-              <div class="admin-card">
-                <div class="admin-card-header">
-                  <h3 class="admin-card-title">Textes de la section Contact</h3>
-                  <button @click="saveContent" :disabled="saving" class="admin-btn-primary">{{ saving ? 'Enregistrement...' : 'Enregistrer' }}</button>
-                </div>
-                <div class="admin-card-body space-y-4">
-                  <div class="grid grid-cols-3 gap-4">
-                    <div><label class="admin-label">Label</label><input v-model="contentData.contact_section_label" class="admin-input" /></div>
-                    <div><label class="admin-label">Titre</label><input v-model="contentData.contact_heading" class="admin-input" /></div>
-                    <div><label class="admin-label">Titre accent</label><input v-model="contentData.contact_heading_highlight" class="admin-input" /></div>
-                  </div>
-                  <div><label class="admin-label">Sous-titre</label><textarea v-model="contentData.contact_subheading" rows="2" class="admin-input" /></div>
-                  <div><label class="admin-label">Texte du bouton</label><input v-model="contentData.contact_button_text" class="admin-input" /></div>
-                </div>
-              </div>
-            </div>
 
             <!-- ═══════ HOME: NAVBAR & FOOTER ═══════ -->
             <div v-if="activeTab === 'home-navbar'" class="space-y-6">
@@ -312,14 +294,22 @@
 
             <!-- ═══════ DATA: COMPÉTENCES ═══════ -->
             <div v-if="activeTab === 'data-skills'">
-              <div class="flex items-center justify-between mb-6">
-                <p class="text-dark-500 text-sm">{{ skillsData.length }} compétence(s) — visibles sur la page d'accueil et les pages détail</p>
+              <div class="flex items-center justify-between mb-4">
+                <p class="text-dark-500 text-sm">{{ skillsData.length }} compétence(s)</p>
                 <button @click="addSkill" class="admin-btn-primary">+ Ajouter</button>
               </div>
-              <div class="space-y-4">
-                <div v-for="(skill, i) in skillsData" :key="skill.id || i" class="admin-card">
-                  <div class="admin-card-body space-y-4">
-                    <div class="grid grid-cols-3 gap-4">
+              <div class="admin-card">
+                <div v-for="(skill, i) in skillsData" :key="skill.id || i" class="border-b border-white/5 last:border-b-0">
+                  <!-- Compact row -->
+                  <div class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/[0.02]" @click="toggleExpand('skill', i)">
+                    <span class="text-dark-600 text-xs tabular-nums w-6">{{ i + 1 }}</span>
+                    <span class="flex-1 text-sm text-white font-medium truncate">{{ skill.name || 'Nouvelle compétence' }}</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider" :class="skill.category === 'Frontend' ? 'bg-blue-500/10 text-blue-400' : skill.category === 'Backend' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'">{{ skill.category || '—' }}</span>
+                    <component :is="expandedItem === `skill-${i}` ? ChevronUp : ChevronDown" :size="14" class="text-dark-600" />
+                  </div>
+                  <!-- Expanded form -->
+                  <div v-if="expandedItem === `skill-${i}`" class="px-4 pb-4 space-y-3 bg-dark-900/30">
+                    <div class="grid grid-cols-2 gap-3">
                       <div><label class="admin-label">Nom</label><input v-model="skill.name" placeholder="Ex : Vue.js" class="admin-input" /></div>
                       <div>
                         <label class="admin-label">Catégorie</label>
@@ -329,58 +319,79 @@
                           <option value="DevOps">DevOps</option>
                         </select>
                       </div>
-                      <div><label class="admin-label">Ordre</label><input v-model.number="skill.sort_order" type="number" placeholder="0" class="admin-input" /></div>
                     </div>
-                    <div><label class="admin-label">Description (page détail)</label><textarea v-model="skill.description" rows="2" placeholder="Décrivez votre expérience avec cette compétence..." class="admin-input" /></div>
-                    <div class="flex justify-end gap-2 pt-1 border-t border-white/5">
-                      <button @click="deleteSkill(skill, i)" class="admin-btn-danger mt-3">Supprimer</button>
-                      <button @click="saveSkill(skill)" class="admin-btn-success mt-3">Enregistrer</button>
+                    <div><label class="admin-label">Description</label><textarea v-model="skill.description" rows="2" placeholder="Décrivez votre expérience..." class="admin-input" /></div>
+                    <div class="flex justify-end gap-2">
+                      <button @click="deleteSkill(skill, i)" class="admin-btn-danger">Supprimer</button>
+                      <button @click="saveSkill(skill)" class="admin-btn-success">Enregistrer</button>
                     </div>
                   </div>
                 </div>
+                <div v-if="!skillsData.length" class="px-4 py-8 text-center text-dark-600 text-sm">Aucune compétence. Cliquez sur « + Ajouter » pour commencer.</div>
               </div>
             </div>
 
             <!-- ═══════ DATA: PROJETS ═══════ -->
             <div v-if="activeTab === 'data-projects'">
-              <div class="flex items-center justify-between mb-6">
-                <p class="text-dark-500 text-sm">{{ projectsData.length }} projet(s) — visibles sur la page d'accueil et les pages détail</p>
+              <div class="flex items-center justify-between mb-4">
+                <p class="text-dark-500 text-sm">{{ projectsData.length }} projet(s)</p>
                 <button @click="addProject" class="admin-btn-primary">+ Ajouter</button>
               </div>
-              <div class="space-y-4">
-                <div v-for="(project, i) in projectsData" :key="project.id || i" class="admin-card">
-                  <div class="admin-card-body space-y-4">
-                    <div v-if="project.image" class="rounded-lg overflow-hidden h-32 bg-dark-800">
-                      <img :src="project.image" :alt="project.title" class="w-full h-full object-cover" />
+              <div class="admin-card">
+                <div v-for="(project, i) in projectsData" :key="project.id || i" class="border-b border-white/5 last:border-b-0">
+                  <!-- Compact row -->
+                  <div class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/[0.02]" @click="toggleExpand('project', i)">
+                    <div v-if="project.image" class="w-10 h-10 rounded-lg overflow-hidden bg-dark-800 shrink-0"><img :src="project.image" class="w-full h-full object-cover" /></div>
+                    <div v-else class="w-10 h-10 rounded-lg bg-dark-800 shrink-0 flex items-center justify-center text-dark-600 text-xs">{{ i + 1 }}</div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm text-white font-medium truncate">{{ project.title || 'Nouveau projet' }}</p>
+                      <p class="text-xs text-dark-500 truncate">{{ project.tagsString || 'Aucune technologie' }}</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                      <div><label class="admin-label">Titre du projet</label><input v-model="project.title" placeholder="Ex : Mon application" class="admin-input" /></div>
-                      <div><label class="admin-label">Identifiant (slug)</label><input v-model="project.slug" placeholder="Ex : mon-application" class="admin-input" /></div>
+                    <span v-if="project.featured" class="px-2 py-0.5 rounded-full bg-primary-500/10 text-primary-400 text-[10px] font-medium">Featured</span>
+                    <component :is="expandedItem === `project-${i}` ? ChevronUp : ChevronDown" :size="14" class="text-dark-600" />
+                  </div>
+                  <!-- Expanded form -->
+                  <div v-if="expandedItem === `project-${i}`" class="px-4 pb-4 space-y-3 bg-dark-900/30">
+                    <div class="grid grid-cols-2 gap-3">
+                      <div><label class="admin-label">Titre</label><input v-model="project.title" placeholder="Ex : Mon application" class="admin-input" /></div>
+                      <div><label class="admin-label">Slug</label><input v-model="project.slug" placeholder="Ex : mon-application" class="admin-input" /></div>
                     </div>
-                    <div><label class="admin-label">Description</label><textarea v-model="project.description" placeholder="Décrivez le projet en quelques lignes..." rows="3" class="admin-input" /></div>
-                    <div class="grid grid-cols-3 gap-4">
-                      <div><label class="admin-label">Lien GitHub</label><input v-model="project.github" placeholder="https://github.com/..." class="admin-input" /></div>
-                      <div><label class="admin-label">Lien démo</label><input v-model="project.demo" placeholder="https://..." class="admin-input" /></div>
-                      <div><label class="admin-label">URL de l'image</label><input v-model="project.image" placeholder="https://... ou /images/..." class="admin-input" /></div>
+                    <div><label class="admin-label">Description</label><textarea v-model="project.description" rows="2" class="admin-input" /></div>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div><label class="admin-label">GitHub</label><input v-model="project.github" placeholder="https://github.com/..." class="admin-input" /></div>
+                      <div><label class="admin-label">Démo</label><input v-model="project.demo" placeholder="https://..." class="admin-input" /></div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                      <div><label class="admin-label">Technologies (virgules)</label><input v-model="project.tagsString" placeholder="Vue.js, Node.js, TailwindCSS" class="admin-input" /></div>
-                      <div class="grid grid-cols-2 gap-4">
-                        <div><label class="admin-label">Ordre</label><input v-model.number="project.sort_order" type="number" placeholder="0" class="admin-input" /></div>
-                        <div class="flex items-end pb-1">
-                          <label class="flex items-center gap-2 text-sm text-dark-400 cursor-pointer select-none">
-                            <input type="checkbox" v-model="project.featured" class="accent-primary-500 w-4 h-4 rounded" />
-                            Mis en avant
+                    <div><label class="admin-label">Technologies (virgules)</label><input v-model="project.tagsString" placeholder="Vue.js, Node.js" class="admin-input" /></div>
+                    <!-- Image upload -->
+                    <div>
+                      <label class="admin-label">Image du projet</label>
+                      <div class="flex items-center gap-3">
+                        <div v-if="project.image" class="w-20 h-14 rounded-lg overflow-hidden bg-dark-800 shrink-0">
+                          <img :src="project.image" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="flex-1 flex items-center gap-2">
+                          <label class="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-dark-900 text-sm text-dark-300 hover:bg-dark-800 cursor-pointer transition-all">
+                            <Upload :size="14" />
+                            <span>{{ uploading ? 'Envoi...' : 'Uploader' }}</span>
+                            <input type="file" accept="image/*" class="hidden" @change="(e) => uploadProjectImage(e, project)" :disabled="uploading" />
                           </label>
+                          <input v-model="project.image" placeholder="ou URL directe..." class="admin-input flex-1" />
                         </div>
                       </div>
                     </div>
-                    <div class="flex justify-end gap-2 pt-1 border-t border-white/5">
-                      <button @click="deleteProject(project, i)" class="admin-btn-danger mt-3">Supprimer</button>
-                      <button @click="saveProject(project)" class="admin-btn-success mt-3">Enregistrer</button>
+                    <div class="flex items-center justify-between pt-1">
+                      <label class="flex items-center gap-2 text-sm text-dark-400 cursor-pointer select-none">
+                        <input type="checkbox" v-model="project.featured" class="accent-primary-500 w-4 h-4 rounded" />
+                        Mis en avant sur la home
+                      </label>
+                      <div class="flex gap-2">
+                        <button @click="deleteProject(project, i)" class="admin-btn-danger">Supprimer</button>
+                        <button @click="saveProject(project)" class="admin-btn-success">Enregistrer</button>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div v-if="!projectsData.length" class="px-4 py-8 text-center text-dark-600 text-sm">Aucun projet. Cliquez sur « + Ajouter » pour commencer.</div>
               </div>
             </div>
 
@@ -421,7 +432,7 @@
 </template>
 
 <script setup lang="ts">
-import { Sparkles, User, Layers, Briefcase, FolderKanban, Mail, PanelTop, ExternalLink, Info } from 'lucide-vue-next'
+import { Sparkles, User, Layers, Briefcase, FolderKanban, PanelTop, ExternalLink, Info, ChevronDown, ChevronUp, Upload } from 'lucide-vue-next'
 
 definePageMeta({ layout: false })
 
@@ -440,6 +451,13 @@ const newPassword = ref('')
 const toast = ref<{ message: string; type: string } | null>(null)
 const maintenanceMode = ref(false)
 const maintenanceMessage = ref('Site en maintenance. Revenez bientôt.')
+const expandedItem = ref<string | null>(null)
+const uploading = ref(false)
+
+function toggleExpand(type: string, index: number) {
+  const key = `${type}-${index}`
+  expandedItem.value = expandedItem.value === key ? null : key
+}
 
 // Navigation
 const navHome = [
@@ -448,7 +466,6 @@ const navHome = [
   { id: 'home-skills', label: 'Compétences', icon: Layers },
   { id: 'home-experience', label: 'Expérience', icon: Briefcase },
   { id: 'home-projects', label: 'Projets', icon: FolderKanban },
-  { id: 'home-contact', label: 'Contact', icon: Mail },
   { id: 'home-navbar', label: 'Navbar & Footer', icon: PanelTop },
 ]
 
@@ -584,6 +601,23 @@ async function loadAllData() {
       tagsString: Array.isArray(p.tags) ? p.tags.join(', ') : (p.tags || ''),
     }))
     contentData.value = content || {}
+    // Pre-fill defaults for empty content keys
+    const defaults: Record<string, string> = {
+      hero_first_name: 'Jérémy', hero_last_name: 'Duc',
+      hero_badge_text: 'Étudiant ESCEN TECH | Alternant chez LesBonsTech',
+      hero_subtitle: 'Développeur Web Full-Stack',
+      experience_section_label: 'Parcours', experience_heading: 'Mon',
+      experience_heading_highlight: 'expérience', experience_subheading: 'Un parcours riche en apprentissages et en défis techniques.',
+      skills_section_label: 'Compétences', skills_heading: 'Mes',
+      skills_heading_highlight: 'compétences', skills_subheading: 'Les technologies et outils que je maîtrise.',
+      projects_section_label: 'Projets', projects_heading_line1: 'Mes réalisations',
+      projects_heading_highlight: 'récentes',
+      about_section_label: 'À propos', about_heading_line1: 'Qui',
+      about_heading_highlight: 'suis-je ?',
+    }
+    for (const [k, v] of Object.entries(defaults)) {
+      if (!contentData.value[k]) contentData.value[k] = v
+    }
     contentStatsJson.value = contentData.value.about_stats || '[]'
   } catch (e: any) {
     showToast('Erreur de chargement: ' + e.message, 'error')
@@ -623,7 +657,8 @@ async function saveAbout() {
 
 // Skills
 function addSkill() {
-  skillsData.value.push({ name: '', category: 'Frontend', sort_order: skillsData.value.length })
+  skillsData.value.push({ name: '', category: 'Frontend', level: 50, description: '', sort_order: skillsData.value.length })
+  expandedItem.value = `skill-${skillsData.value.length - 1}`
 }
 
 async function saveSkill(skill: any) {
@@ -691,6 +726,33 @@ function addProject() {
     title: '', slug: '', description: '', tags: [], tagsString: '',
     image: '', github: '', demo: '', featured: false, sort_order: projectsData.value.length,
   })
+  expandedItem.value = `project-${projectsData.value.length - 1}`
+}
+
+async function uploadProjectImage(event: Event, project: any) {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length) return
+  uploading.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', input.files[0])
+    const res = await fetch(`${apiUrl}/api/admin/upload`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token.value}` },
+      body: formData,
+    })
+    const data = await res.json()
+    if (data.url) {
+      project.image = `${apiUrl}${data.url}`
+      showToast('Image uploadée')
+    } else {
+      showToast(data.error || 'Erreur upload', 'error')
+    }
+  } catch (e: any) {
+    showToast(e.message, 'error')
+  }
+  uploading.value = false
+  input.value = ''
 }
 
 async function saveProject(project: any) {

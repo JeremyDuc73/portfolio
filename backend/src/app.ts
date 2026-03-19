@@ -47,6 +47,30 @@ app.get('/api/skills/:id', (c) => {
   return c.json({ ...skill, projects: related })
 })
 
+// Serve uploaded files
+app.get('/api/uploads/:filename', async (c) => {
+  const filename = c.req.param('filename')
+  if (filename.includes('..') || filename.includes('/')) {
+    return c.json({ error: 'Invalid filename' }, 400)
+  }
+  const { join } = await import('node:path')
+  const { readFileSync, existsSync } = await import('node:fs')
+  const filepath = join(process.cwd(), 'data', 'uploads', filename)
+  if (!existsSync(filepath)) return c.notFound()
+  const ext = filename.split('.').pop()?.toLowerCase() || ''
+  const mimeMap: Record<string, string> = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+    gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml',
+  }
+  const buffer = readFileSync(filepath)
+  return new Response(buffer, {
+    headers: {
+      'Content-Type': mimeMap[ext] || 'application/octet-stream',
+      'Cache-Control': 'public, max-age=31536000',
+    },
+  })
+})
+
 // API routes
 app.route('/api/projects', projectsRoutes)
 app.route('/api/about', aboutRoutes)

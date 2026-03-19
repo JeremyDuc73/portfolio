@@ -1,5 +1,5 @@
 <template>
-  <section id="projects" ref="sectionRef" class="relative">
+  <section id="projects" ref="sectionRef" class="relative overflow-hidden">
     <!-- Sticky header + horizontal scroll area -->
     <div ref="pinContainer" class="relative">
       <!-- Section header (sticky on top) -->
@@ -26,7 +26,7 @@
       </div>
 
       <!-- Horizontal scroll track -->
-      <div ref="scrollTrack" class="overflow-hidden">
+      <div ref="scrollTrack">
         <div ref="scrollContent" class="flex gap-4 md:gap-8 pl-6 md:pl-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] pr-[10vw] md:pr-[30vw] pb-16 md:pb-32 pt-4 md:pt-8">
           <div
             v-for="(project, index) in projects"
@@ -83,9 +83,9 @@
             </div>
 
             <!-- Content -->
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-3">
-                <span v-if="project.featured" class="px-2 py-0.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-medium">
+            <div class="p-4 sm:p-6">
+              <div v-if="project.featured" class="mb-2">
+                <span class="px-2 py-0.5 rounded-full bg-primary-500/10 text-primary-400 text-xs font-medium">
                   Featured
                 </span>
               </div>
@@ -116,11 +116,12 @@
         </div>
       </div>
 
-      <!-- Progress bar -->
-      <div class="container mx-auto px-6 pb-16">
-        <div class="h-px bg-dark-800 rounded-full overflow-hidden">
-          <div ref="progressBar" class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full" style="width: 0%" />
-        </div>
+    </div>
+
+    <!-- Progress bar (outside pin container so it's always visible) -->
+    <div class="container mx-auto px-6 pb-8 md:pb-16">
+      <div class="h-px bg-dark-800 rounded-full overflow-hidden">
+        <div ref="progressBar" class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full" style="width: 0%" />
       </div>
     </div>
   </section>
