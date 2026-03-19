@@ -23,11 +23,9 @@ onMounted(() => {
       document.documentElement.scrollHeight,
       document.body.scrollHeight
     )
-    const totalHeight = pageHeight + window.innerHeight * 0.5
+    const totalHeight = pageHeight
     const spacing = totalHeight / count
     const initialVisible = Math.round((window.innerHeight * 1.02) / spacing)
-
-    container.style.height = totalHeight + 'px'
 
     const fragment = document.createDocumentFragment()
 
@@ -90,7 +88,6 @@ onMounted(() => {
         document.documentElement.scrollHeight,
         document.body.scrollHeight
       )
-      container.style.height = newH + 'px'
       const newSpacing = newH / count
       const all = container.querySelectorAll('.snake-circle')
       all.forEach((c: HTMLElement, idx: number) => {

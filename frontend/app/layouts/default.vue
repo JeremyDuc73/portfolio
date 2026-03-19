@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen relative">
+  <div class="min-h-screen relative overflow-hidden">
     <SnakeTrail v-if="isHome" />
     <TheNavbar v-if="isHome" />
     <TheDetailNavbar v-else />
