@@ -425,7 +425,7 @@ import { FileText, User, Layers, Briefcase, FolderKanban } from 'lucide-vue-next
 definePageMeta({ layout: false })
 
 const config = useRuntimeConfig()
-const apiUrl = config.public.apiBrowserUrl || 'http://localhost:11501'
+const apiUrl = config.public.apiUrl || 'http://localhost:11501'
 
 const isAuthenticated = ref(false)
 const token = ref('')
@@ -736,6 +736,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@reference "~/assets/css/main.css";
 /* ─── Inputs ──────────────────────────────── */
 .admin-input {
   @apply w-full px-3 py-2.5 rounded-lg border border-white/10 bg-dark-900 text-white text-sm placeholder-dark-600 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all;

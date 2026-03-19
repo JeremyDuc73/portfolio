@@ -6,6 +6,10 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+ARG NUXT_PUBLIC_API_URL=https://jeremyduc.dev
+ENV NUXT_PUBLIC_API_URL=${NUXT_PUBLIC_API_URL}
+
 RUN npm run build
 
 FROM node:20-alpine
