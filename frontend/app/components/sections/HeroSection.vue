@@ -11,30 +11,30 @@
 
     <div class="relative container mx-auto px-6 text-center z-10">
       <!-- Scramble badge -->
-      <div ref="badge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 opacity-0 translate-y-4">
+      <div ref="badge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-4 md:mb-8 opacity-0 translate-y-4">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
         <span ref="badgeText" class="text-sm text-dark-300 font-mono" />
       </div>
 
       <!-- Main heading with character split -->
-      <h1 ref="heading" class="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-tight mb-6">
+      <h1 ref="heading" class="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-tight mb-2 md:mb-6">
         <span class="sr-only">{{ c('hero_first_name', 'Jérémy') }} {{ c('hero_last_name', 'Duc') }}</span>
-        <span aria-hidden="true" class="inline-block overflow-hidden pb-3">
+        <span aria-hidden="true" class="inline-block overflow-hidden pb-1 md:pb-3">
           <span ref="firstName" class="inline-block" />
         </span>
         <br class="sm:hidden" />
-        <span aria-hidden="true" class="inline-block overflow-hidden pb-3">
+        <span aria-hidden="true" class="inline-block overflow-hidden pb-1 md:pb-3">
           <span ref="lastName" class="inline-block gradient-text" />
         </span>
       </h1>
 
       <!-- Subtitle typed char by char -->
-      <div ref="subtitle" class="text-lg sm:text-xl md:text-3xl text-dark-400 font-light mb-4 min-h-10 opacity-0 text-center">
+      <div ref="subtitle" class="text-lg sm:text-xl md:text-3xl text-dark-400 font-light mb-2 md:mb-4 min-h-10 opacity-0 text-center">
         <span class="text-primary-400">&lt;</span><span ref="subtitleText" /><span ref="cursor" class="inline-block w-[2px] h-[0.9em] bg-primary-400 ml-1 align-middle" /><span class="text-primary-400 ml-0.5">/&gt;</span>
       </div>
 
       <!-- Description with staggered word reveal -->
-      <p ref="description" class="text-dark-500 text-base sm:text-lg max-w-2xl mx-auto mb-8 sm:mb-12 opacity-0">
+      <p ref="description" class="text-dark-500 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-6 sm:mb-12 opacity-0">
         <span v-for="(word, i) in descriptionWords" :key="i" ref="descWords" class="inline-block mr-[0.3em] translate-y-8 opacity-0">{{ word }}</span>
       </p>
 
@@ -43,7 +43,7 @@
         <a
           href="#projects"
           ref="ctaPrimary"
-          class="magnetic group px-8 py-4 rounded-2xl bg-primary-600 hover:bg-primary-500 text-white font-medium transition-colors duration-300 hover:shadow-2xl hover:shadow-primary-500/25 flex items-center gap-2"
+          class="magnetic group px-6 py-3 md:px-8 md:py-4 rounded-2xl bg-primary-600 hover:bg-primary-500 text-white font-medium transition-colors duration-300 hover:shadow-2xl hover:shadow-primary-500/25 flex items-center gap-2"
           @click.prevent="scrollTo('#projects')"
         >
           <span class="relative z-10">{{ c('hero_cta_primary', 'Voir mes projets') }}</span>
@@ -54,7 +54,7 @@
         <a
           href="#about"
           ref="ctaSecondary"
-          class="magnetic px-8 py-4 rounded-2xl glass glass-hover text-white font-medium"
+          class="magnetic px-6 py-3 md:px-8 md:py-4 rounded-2xl glass glass-hover text-white font-medium"
           @click.prevent="scrollTo('#about')"
         >
           <span class="relative z-10">{{ c('hero_cta_secondary', 'En savoir plus') }}</span>
@@ -64,7 +64,7 @@
     </div>
 
     <!-- Scroll indicator (outside content to avoid overlap) -->
-    <div ref="scrollIndicator" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0 z-10">
+    <div ref="scrollIndicator" class="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 md:gap-2 opacity-0 z-10">
       <span class="text-dark-600 text-xs uppercase tracking-widest font-mono">Scroll</span>
       <div class="w-6 h-10 rounded-full border-2 border-dark-700 flex items-start justify-center p-1.5">
         <div class="w-1.5 h-1.5 rounded-full bg-primary-400 animate-bounce" />

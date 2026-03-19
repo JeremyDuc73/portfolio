@@ -3,7 +3,7 @@
     <!-- Sticky header + horizontal scroll area -->
     <div ref="pinContainer" class="relative">
       <!-- Section header (sticky on top) -->
-      <div class="pt-32 pb-12">
+      <div class="pt-20 md:pt-32 pb-6 md:pb-12">
         <div class="container mx-auto px-6">
           <div ref="header" class="flex items-end justify-between mb-0 opacity-0">
             <div>
@@ -27,7 +27,7 @@
 
       <!-- Horizontal scroll track -->
       <div ref="scrollTrack" class="overflow-hidden">
-        <div ref="scrollContent" class="flex gap-8 pl-6 md:pl-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] pr-[10vw] md:pr-[30vw] pb-32 pt-8">
+        <div ref="scrollContent" class="flex gap-4 md:gap-8 pl-6 md:pl-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] pr-[10vw] md:pr-[30vw] pb-16 md:pb-32 pt-4 md:pt-8">
           <div
             v-for="(project, index) in projects"
             :key="project.slug"
