@@ -23,7 +23,7 @@ onMounted(() => {
       document.documentElement.scrollHeight,
       document.body.scrollHeight
     )
-    const totalHeight = pageHeight
+    const totalHeight = pageHeight + window.innerHeight * 0.5
     const spacing = totalHeight / count
     const initialVisible = Math.round((window.innerHeight * 1.02) / spacing)
 

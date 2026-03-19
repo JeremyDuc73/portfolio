@@ -7,7 +7,7 @@
       <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <!-- Left: Visual card -->
         <div ref="imageCol" class="relative" style="clip-path: inset(100% 0 0 0);">
-          <div class="relative aspect-square max-w-md mx-auto">
+          <div class="relative max-w-sm md:max-w-md mx-auto">
             <!-- Decorative frames with rotation -->
             <div ref="frame1" class="absolute -inset-2 rounded-3xl border border-primary-500/20 rotate-3" />
             <div ref="frame2" class="absolute -inset-2 rounded-3xl border border-primary-400/10 -rotate-2" />

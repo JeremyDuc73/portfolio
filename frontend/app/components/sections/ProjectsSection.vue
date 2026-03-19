@@ -27,7 +27,7 @@
 
       <!-- Horizontal scroll track -->
       <div ref="scrollTrack" class="overflow-hidden">
-        <div ref="scrollContent" class="flex gap-8 pl-6 md:pl-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] pr-[30vw] pb-32 pt-8">
+        <div ref="scrollContent" class="flex gap-8 pl-6 md:pl-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] pr-[10vw] md:pr-[30vw] pb-32 pt-8">
           <div
             v-for="(project, index) in projects"
             :key="project.slug"
