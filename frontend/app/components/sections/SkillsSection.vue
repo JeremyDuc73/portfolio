@@ -1,16 +1,16 @@
 <template>
-  <section id="skills" class="relative py-32 overflow-hidden">
+  <section id="skills" class="relative py-20 md:py-32 overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary-950/5 to-transparent" />
 
     <div class="container mx-auto px-6 relative">
       <!-- Section header -->
-      <div ref="header" class="text-center mb-20 opacity-0">
+      <div ref="header" class="text-center mb-12 md:mb-20 opacity-0">
         <div class="flex items-center justify-center gap-3 mb-6">
           <div class="h-px w-12 bg-primary-500" />
           <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('skills_section_label', 'Compétences') }}</span>
           <div class="h-px w-12 bg-primary-500" />
         </div>
-        <h2 class="font-display font-bold text-4xl md:text-5xl text-white mb-4">
+        <h2 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-white mb-4">
           {{ c('skills_heading', 'Mon arsenal') }}
           <span class="gradient-text">{{ c('skills_heading_highlight', 'technique') }}</span>
         </h2>
@@ -20,7 +20,7 @@
       </div>
 
       <!-- Skills categories -->
-      <div class="grid md:grid-cols-3 gap-8">
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
         <div
           v-for="(category, index) in categories"
           :key="category.name"

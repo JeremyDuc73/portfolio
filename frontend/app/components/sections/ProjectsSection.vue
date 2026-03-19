@@ -11,7 +11,7 @@
                 <div class="h-px w-12 bg-primary-500" />
                 <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('projects_section_label', 'Projets') }}</span>
               </div>
-              <h2 class="font-display font-bold text-4xl md:text-5xl text-white leading-tight">
+              <h2 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-white leading-tight">
                 {{ c('projects_heading_line1', 'Mes réalisations') }}<br />
                 <span class="gradient-text">{{ c('projects_heading_highlight', 'récentes') }}</span>
               </h2>
@@ -38,7 +38,7 @@
             @click="navigateTo(`/projects/${project.slug}`)"
           >
             <!-- Project image / gradient -->
-            <div class="relative h-64 overflow-hidden">
+            <div class="relative h-48 sm:h-64 overflow-hidden">
               <!-- Always show gradient + number as base -->
               <div
                 class="absolute inset-0 bg-gradient-to-br transition-all duration-700 group-hover:scale-110"

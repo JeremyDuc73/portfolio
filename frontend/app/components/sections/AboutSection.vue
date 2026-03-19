@@ -1,10 +1,10 @@
 <template>
-  <section id="about" ref="sectionRef" class="relative py-32 overflow-hidden">
+  <section id="about" ref="sectionRef" class="relative py-20 md:py-32 overflow-hidden">
     <!-- Background decoration -->
     <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-primary-600/5 rounded-full blur-[100px]" />
 
     <div class="container mx-auto px-6">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <!-- Left: Visual card -->
         <div ref="imageCol" class="relative" style="clip-path: inset(100% 0 0 0);">
           <div class="relative aspect-square max-w-md mx-auto">
@@ -42,7 +42,7 @@
             <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('about_section_label', 'À propos') }}</span>
           </div>
 
-          <h2 class="font-display font-bold text-4xl md:text-5xl text-white mb-6 leading-tight">
+          <h2 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-white mb-6 leading-tight">
             {{ c('about_heading_line1', 'Créer des expériences') }}<br />
             <span class="gradient-text">{{ c('about_heading_highlight', 'qui marquent') }}</span>
           </h2>

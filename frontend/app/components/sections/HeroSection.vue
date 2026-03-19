@@ -29,12 +29,12 @@
       </h1>
 
       <!-- Subtitle typed char by char -->
-      <div ref="subtitle" class="text-xl sm:text-2xl md:text-3xl text-dark-400 font-light mb-4 h-10 opacity-0 text-center whitespace-nowrap">
+      <div ref="subtitle" class="text-lg sm:text-xl md:text-3xl text-dark-400 font-light mb-4 min-h-10 opacity-0 text-center">
         <span class="text-primary-400">&lt;</span><span ref="subtitleText" /><span ref="cursor" class="inline-block w-[2px] h-[0.9em] bg-primary-400 ml-1 align-middle" /><span class="text-primary-400 ml-0.5">/&gt;</span>
       </div>
 
       <!-- Description with staggered word reveal -->
-      <p ref="description" class="text-dark-500 text-lg max-w-2xl mx-auto mb-12 opacity-0">
+      <p ref="description" class="text-dark-500 text-base sm:text-lg max-w-2xl mx-auto mb-8 sm:mb-12 opacity-0">
         <span v-for="(word, i) in descriptionWords" :key="i" ref="descWords" class="inline-block mr-[0.3em] translate-y-8 opacity-0">{{ word }}</span>
       </p>
 

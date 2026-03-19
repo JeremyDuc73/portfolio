@@ -1,17 +1,17 @@
 <template>
-  <section id="experience" ref="sectionRef" class="relative py-32 overflow-hidden">
+  <section id="experience" ref="sectionRef" class="relative py-20 md:py-32 overflow-hidden">
     <!-- Background decoration -->
     <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary-600/5 rounded-full blur-[120px]" />
 
     <div class="container mx-auto px-6 relative">
       <!-- Section header -->
-      <div ref="header" class="text-center mb-20 opacity-0">
+      <div ref="header" class="text-center mb-12 md:mb-20 opacity-0">
         <div class="flex items-center justify-center gap-3 mb-6">
           <div class="h-px w-12 bg-primary-500" />
           <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('experience_section_label', 'Expérience') }}</span>
           <div class="h-px w-12 bg-primary-500" />
         </div>
-        <h2 class="font-display font-bold text-4xl md:text-5xl text-white mb-4">
+        <h2 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-white mb-4">
           {{ c('experience_heading', 'Mon parcours') }}
           <span class="gradient-text">{{ c('experience_heading_highlight', 'professionnel') }}</span>
         </h2>

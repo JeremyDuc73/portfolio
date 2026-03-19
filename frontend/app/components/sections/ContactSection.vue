@@ -1,5 +1,5 @@
 <template>
-  <section id="contact" class="relative py-32 overflow-hidden">
+  <section id="contact" class="relative py-20 md:py-32 overflow-hidden">
     <!-- Background -->
     <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary-600/10 rounded-full blur-[120px]" />
 
@@ -11,7 +11,7 @@
           <span class="text-primary-400 font-mono text-sm uppercase tracking-wider">{{ c('contact_section_label', 'Contact') }}</span>
           <div class="h-px w-12 bg-primary-500" />
         </div>
-        <h2 class="font-display font-bold text-4xl md:text-5xl text-white mb-4">
+        <h2 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-white mb-4">
           {{ c('contact_heading', 'Restons en') }}
           <span class="gradient-text">{{ c('contact_heading_highlight', 'contact') }}</span>
         </h2>
@@ -20,7 +20,7 @@
         </p>
       </div>
 
-      <div class="grid lg:grid-cols-5 gap-12 max-w-5xl mx-auto">
+      <div class="grid lg:grid-cols-5 gap-8 lg:gap-12 max-w-5xl mx-auto">
         <!-- Contact info -->
         <div ref="infoCol" class="lg:col-span-2 space-y-6 opacity-0">
           <div

@@ -14,7 +14,8 @@ onMounted(() => {
 
   const container = snakeContainer.value
   const noise2D = createNoise2D()
-  const count = 4000
+  const isMobile = window.innerWidth < 768
+  const count = isMobile ? 2000 : 4000
 
   // Wait for full page render to get accurate height
   setTimeout(() => {
@@ -22,7 +23,7 @@ onMounted(() => {
       document.documentElement.scrollHeight,
       document.body.scrollHeight
     )
-    const totalHeight = pageHeight
+    const totalHeight = pageHeight + window.innerHeight * 0.5
     const spacing = totalHeight / count
     const initialVisible = Math.round((window.innerHeight * 1.02) / spacing)
 
@@ -37,7 +38,7 @@ onMounted(() => {
       const n2 = noise2D(i * 0.002, i * 0.001)
 
       const y = i * spacing
-      const x = n2 * 200
+      const x = n2 * (isMobile ? 100 : 200)
       div.style.position = 'absolute'
       div.style.top = y + 'px'
       div.style.left = '50%'
@@ -79,7 +80,7 @@ onMounted(() => {
         trigger: document.body,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 5,
+        scrub: 2.5,
       },
     })
 
