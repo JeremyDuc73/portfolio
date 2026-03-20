@@ -75,11 +75,11 @@
           </div>
         </div>
 
-        <!-- Linked skills -->
-        <div v-if="project.skills?.length" ref="skillsEl" class="mb-12">
+        <!-- Technologies (= linked skills) -->
+        <div v-if="project.skills?.length" ref="techEl" class="mb-12">
           <h2 class="font-display font-semibold text-xl text-white mb-4 flex items-center gap-3">
             <div class="h-px w-8 bg-primary-500" />
-            Compétences utilisées
+            Technologies utilisées
           </h2>
           <div class="flex flex-wrap gap-3">
             <NuxtLink
@@ -90,23 +90,6 @@
             >
               {{ skill.name }}
             </NuxtLink>
-          </div>
-        </div>
-
-        <!-- Technologies -->
-        <div v-if="project.tags?.length" ref="techEl" class="mb-12">
-          <h2 class="font-display font-semibold text-xl text-white mb-4 flex items-center gap-3">
-            <div class="h-px w-8 bg-primary-500" />
-            Technologies utilisées
-          </h2>
-          <div class="flex flex-wrap gap-3">
-            <span
-              v-for="tag in project.tags"
-              :key="tag"
-              class="px-4 py-2 rounded-xl glass border border-white/5 text-dark-300 text-sm font-medium hover:border-primary-500/30 hover:text-primary-400 transition-all duration-300"
-            >
-              {{ tag }}
-            </span>
           </div>
         </div>
 
@@ -126,7 +109,7 @@
               <h3 class="font-display font-semibold text-white mb-1 group-hover:text-primary-400 transition-colors">{{ rp.title }}</h3>
               <p class="text-dark-500 text-sm line-clamp-2">{{ rp.description }}</p>
               <div class="flex flex-wrap gap-1.5 mt-3">
-                <span v-for="tag in rp.tags?.slice(0, 3)" :key="tag" class="px-2 py-0.5 rounded-md bg-white/5 text-dark-400 text-xs font-mono">{{ tag }}</span>
+                <span v-for="skill in (rp.skills || []).slice(0, 3)" :key="skill.id" class="px-2 py-0.5 rounded-md bg-white/5 text-dark-400 text-xs font-mono">{{ skill.name }}</span>
               </div>
             </NuxtLink>
           </div>
@@ -185,7 +168,6 @@ useHead({
 const headerEl = ref<HTMLElement | null>(null)
 const imageEl = ref<HTMLElement | null>(null)
 const galleryEl = ref<HTMLElement | null>(null)
-const skillsEl = ref<HTMLElement | null>(null)
 const techEl = ref<HTMLElement | null>(null)
 const relatedEl = ref<HTMLElement | null>(null)
 const lightboxUrl = ref<string | null>(null)
@@ -221,17 +203,10 @@ onMounted(() => {
       )
     }
 
-    if (skillsEl.value) {
-      gsap.fromTo(skillsEl.value,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.3 }
-      )
-    }
-
     if (techEl.value) {
       gsap.fromTo(techEl.value,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.35 }
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.3 }
       )
     }
 

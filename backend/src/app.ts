@@ -43,12 +43,19 @@ app.get('/api/skills/:id', (c) => {
     ORDER BY p.sort_order
   `).all(id) as any[]
 
-  const projects = related.map((p: any) => ({
-    ...p,
-    tags: JSON.parse(p.tags || '[]'),
-    featured: !!p.featured,
-    images: db.prepare('SELECT * FROM project_images WHERE project_id = ? ORDER BY sort_order').all(p.id),
-  }))
+  const projects = related.map((p: any) => {
+    const sids = (db.prepare('SELECT skill_id FROM project_skills WHERE project_id = ?').all(p.id) as any[]).map((r: any) => r.skill_id)
+    const skills = sids.length
+      ? db.prepare(`SELECT id, name, category FROM skills WHERE id IN (${sids.map(() => '?').join(',')})`).all(...sids) as any[]
+      : []
+    return {
+      ...p,
+      tags: JSON.parse(p.tags || '[]'),
+      featured: !!p.featured,
+      skills,
+      images: db.prepare('SELECT * FROM project_images WHERE project_id = ? ORDER BY sort_order').all(p.id),
+    }
+  })
 
   return c.json({ ...skill, projects })
 })

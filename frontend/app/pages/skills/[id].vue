@@ -55,11 +55,11 @@
                 <p class="text-dark-500 text-sm mb-3 line-clamp-2">{{ project.description }}</p>
                 <div class="flex flex-wrap gap-1.5">
                   <span
-                    v-for="tag in project.tags?.slice(0, 5)"
-                    :key="tag"
+                    v-for="skill in (project.skills || []).slice(0, 5)"
+                    :key="skill.id"
                     class="px-2 py-0.5 rounded-md bg-white/5 text-dark-400 text-xs font-mono"
                   >
-                    {{ tag }}
+                    {{ skill.name }}
                   </span>
                 </div>
               </div>

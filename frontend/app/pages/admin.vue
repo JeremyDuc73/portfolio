@@ -345,7 +345,7 @@
                     <div v-else class="w-10 h-10 rounded-lg bg-dark-800 shrink-0 flex items-center justify-center text-dark-600 text-xs">{{ i + 1 }}</div>
                     <div class="flex-1 min-w-0">
                       <p class="text-sm text-white font-medium truncate">{{ project.title || 'Nouveau projet' }}</p>
-                      <p class="text-xs text-dark-500 truncate">{{ project.tagsString || 'Aucune technologie' }}</p>
+                      <p class="text-xs text-dark-500 truncate">{{ projectSkillNames(project) || 'Aucune technologie' }}</p>
                     </div>
                     <span v-if="project.featured" class="px-2 py-0.5 rounded-full bg-primary-500/10 text-primary-400 text-[10px] font-medium">Featured</span>
                     <component :is="expandedItem === `project-${i}` ? ChevronUp : ChevronDown" :size="14" class="text-dark-600" />
@@ -361,11 +361,9 @@
                       <div><label class="admin-label">GitHub</label><input v-model="project.github" placeholder="https://github.com/..." class="admin-input" /></div>
                       <div><label class="admin-label">Démo</label><input v-model="project.demo" placeholder="https://..." class="admin-input" /></div>
                     </div>
-                    <div><label class="admin-label">Technologies (virgules)</label><input v-model="project.tagsString" placeholder="Vue.js, Node.js" class="admin-input" /></div>
-
-                    <!-- Skills multi-select -->
+                    <!-- Technologies (= skills multi-select) -->
                     <div>
-                      <label class="admin-label">Compétences associées</label>
+                      <label class="admin-label">Technologies</label>
                       <div class="flex flex-wrap gap-2 p-3 rounded-lg border border-white/10 bg-dark-900 max-h-40 overflow-y-auto">
                         <label
                           v-for="skill in skillsData"
@@ -639,10 +637,7 @@ async function loadAllData() {
     aboutData.value = about || {}
     skillsData.value = skills || []
     experienceData.value = experience || []
-    projectsData.value = (projects || []).map((p: any) => ({
-      ...p,
-      tagsString: Array.isArray(p.tags) ? p.tags.join(', ') : (p.tags || ''),
-    }))
+    projectsData.value = (projects || []).map((p: any) => ({ ...p }))
     contentData.value = content || {}
     // Pre-fill defaults for empty content keys
     const defaults: Record<string, string> = {
@@ -766,7 +761,7 @@ async function deleteExperience(exp: any, index: number) {
 // Projects
 function addProject() {
   projectsData.value.push({
-    title: '', slug: '', description: '', tags: [], tagsString: '',
+    title: '', slug: '', description: '',
     image: '', github: '', demo: '', featured: false, sort_order: projectsData.value.length,
     skill_ids: [], images: [],
   })
@@ -778,6 +773,14 @@ function toggleProjectSkill(project: any, skillId: number) {
   const idx = project.skill_ids.indexOf(skillId)
   if (idx >= 0) project.skill_ids.splice(idx, 1)
   else project.skill_ids.push(skillId)
+}
+
+function projectSkillNames(project: any): string {
+  if (!project.skill_ids?.length) return ''
+  return skillsData.value
+    .filter((s: any) => project.skill_ids.includes(s.id))
+    .map((s: any) => s.name)
+    .join(', ')
 }
 
 async function uploadProjectImage(event: Event, project: any) {
@@ -857,11 +860,7 @@ async function removeGalleryImage(project: any, img: any, index: number) {
 }
 
 async function saveProject(project: any) {
-  const payload = {
-    ...project,
-    tags: project.tagsString ? project.tagsString.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
-  }
-  delete payload.tagsString
+  const payload = { ...project }
   delete payload.images
   try {
     if (project.id) {

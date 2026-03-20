@@ -98,14 +98,14 @@
                 {{ project.description }}
               </p>
 
-              <!-- Tags -->
+              <!-- Technologies (skills) -->
               <div class="flex flex-wrap gap-2">
                 <span
-                  v-for="tag in project.tags.slice(0, 4)"
-                  :key="tag"
+                  v-for="skill in (project.skills || []).slice(0, 4)"
+                  :key="skill.id"
                   class="px-2 py-1 rounded-md bg-white/5 text-dark-400 text-xs font-mono"
                 >
-                  {{ tag }}
+                  {{ skill.name }}
                 </span>
               </div>
             </div>
