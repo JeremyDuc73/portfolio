@@ -26,6 +26,19 @@ export interface AboutData {
   experience: Experience[]
 }
 
+export interface ProjectImage {
+  id: number
+  url: string
+  caption: string
+  sort_order: number
+}
+
+export interface ProjectSkill {
+  id: number
+  name: string
+  category: string
+}
+
 export interface Project {
   id: number
   slug: string
@@ -37,6 +50,9 @@ export interface Project {
   demo: string
   featured: boolean
   sort_order: number
+  skill_ids?: number[]
+  skills?: ProjectSkill[]
+  images?: ProjectImage[]
 }
 
 export type SiteContent = Record<string, string>

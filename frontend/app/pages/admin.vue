@@ -362,9 +362,32 @@
                       <div><label class="admin-label">Démo</label><input v-model="project.demo" placeholder="https://..." class="admin-input" /></div>
                     </div>
                     <div><label class="admin-label">Technologies (virgules)</label><input v-model="project.tagsString" placeholder="Vue.js, Node.js" class="admin-input" /></div>
-                    <!-- Image upload -->
+
+                    <!-- Skills multi-select -->
                     <div>
-                      <label class="admin-label">Image du projet</label>
+                      <label class="admin-label">Compétences associées</label>
+                      <div class="flex flex-wrap gap-2 p-3 rounded-lg border border-white/10 bg-dark-900 max-h-40 overflow-y-auto">
+                        <label
+                          v-for="skill in skillsData"
+                          :key="skill.id"
+                          class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs cursor-pointer select-none transition-all"
+                          :class="(project.skill_ids || []).includes(skill.id) ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30' : 'bg-white/5 text-dark-400 border border-transparent hover:bg-white/10'"
+                        >
+                          <input
+                            type="checkbox"
+                            :checked="(project.skill_ids || []).includes(skill.id)"
+                            class="hidden"
+                            @change="toggleProjectSkill(project, skill.id)"
+                          />
+                          {{ skill.name }}
+                        </label>
+                        <p v-if="!skillsData.length" class="text-dark-600 text-xs">Ajoutez d'abord des compétences dans Gestion → Compétences.</p>
+                      </div>
+                    </div>
+
+                    <!-- Main image upload -->
+                    <div>
+                      <label class="admin-label">Image principale</label>
                       <div class="flex items-center gap-3">
                         <div v-if="project.image" class="w-20 h-14 rounded-lg overflow-hidden bg-dark-800 shrink-0">
                           <img :src="project.image" class="w-full h-full object-cover" />
@@ -373,12 +396,32 @@
                           <label class="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-dark-900 text-sm text-dark-300 hover:bg-dark-800 cursor-pointer transition-all">
                             <Upload :size="14" />
                             <span>{{ uploading ? 'Envoi...' : 'Uploader' }}</span>
-                            <input type="file" accept="image/*" class="hidden" @change="(e) => uploadProjectImage(e, project)" :disabled="uploading" />
+                            <input type="file" accept="image/*" class="hidden" @change="(e: any) => uploadProjectImage(e, project)" :disabled="uploading" />
                           </label>
                           <input v-model="project.image" placeholder="ou URL directe..." class="admin-input flex-1" />
                         </div>
                       </div>
                     </div>
+
+                    <!-- Gallery images -->
+                    <div>
+                      <label class="admin-label">Images supplémentaires (galerie)</label>
+                      <div class="space-y-2">
+                        <div v-for="(img, imgIdx) in (project.images || [])" :key="img.id || imgIdx" class="flex items-center gap-2">
+                          <div class="w-16 h-11 rounded-lg overflow-hidden bg-dark-800 shrink-0">
+                            <img :src="img.url" class="w-full h-full object-cover" />
+                          </div>
+                          <input v-model="img.caption" placeholder="Légende (optionnel)" class="admin-input flex-1 text-xs" />
+                          <button @click="removeGalleryImage(project, img, imgIdx)" class="text-red-400 hover:text-red-300 text-xs px-2 py-1">✕</button>
+                        </div>
+                        <label class="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-white/10 bg-dark-900/50 text-sm text-dark-400 hover:bg-dark-800 cursor-pointer transition-all w-fit">
+                          <Upload :size="14" />
+                          <span>{{ uploading ? 'Envoi...' : 'Ajouter une image' }}</span>
+                          <input type="file" accept="image/*" class="hidden" @change="(e: any) => uploadGalleryImage(e, project)" :disabled="uploading" />
+                        </label>
+                      </div>
+                    </div>
+
                     <div class="flex items-center justify-between pt-1">
                       <label class="flex items-center gap-2 text-sm text-dark-400 cursor-pointer select-none">
                         <input type="checkbox" v-model="project.featured" class="accent-primary-500 w-4 h-4 rounded" />
@@ -725,8 +768,16 @@ function addProject() {
   projectsData.value.push({
     title: '', slug: '', description: '', tags: [], tagsString: '',
     image: '', github: '', demo: '', featured: false, sort_order: projectsData.value.length,
+    skill_ids: [], images: [],
   })
   expandedItem.value = `project-${projectsData.value.length - 1}`
+}
+
+function toggleProjectSkill(project: any, skillId: number) {
+  if (!project.skill_ids) project.skill_ids = []
+  const idx = project.skill_ids.indexOf(skillId)
+  if (idx >= 0) project.skill_ids.splice(idx, 1)
+  else project.skill_ids.push(skillId)
 }
 
 async function uploadProjectImage(event: Event, project: any) {
@@ -755,18 +806,79 @@ async function uploadProjectImage(event: Event, project: any) {
   input.value = ''
 }
 
+async function uploadGalleryImage(event: Event, project: any) {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length) return
+  uploading.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', input.files[0])
+    const res = await fetch(`${apiUrl}/api/admin/upload`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token.value}` },
+      body: formData,
+    })
+    const data = await res.json()
+    if (data.url) {
+      const url = `${apiUrl}${data.url}`
+      if (!project.images) project.images = []
+      // If project is already saved, persist to DB immediately
+      if (project.id) {
+        const imgData = await apiFetch(`/api/admin/projects/${project.id}/images`, {
+          method: 'POST',
+          body: JSON.stringify({ url, caption: '' }),
+        })
+        project.images.push({ id: imgData.id, url, caption: '', sort_order: project.images.length })
+      } else {
+        project.images.push({ url, caption: '', sort_order: project.images.length })
+      }
+      showToast('Image ajoutée')
+    } else {
+      showToast(data.error || 'Erreur upload', 'error')
+    }
+  } catch (e: any) {
+    showToast(e.message, 'error')
+  }
+  uploading.value = false
+  input.value = ''
+}
+
+async function removeGalleryImage(project: any, img: any, index: number) {
+  if (project.id && img.id) {
+    try {
+      await apiFetch(`/api/admin/projects/${project.id}/images/${img.id}`, { method: 'DELETE' })
+    } catch (e: any) {
+      showToast(e.message, 'error')
+      return
+    }
+  }
+  project.images.splice(index, 1)
+  showToast('Image supprimée')
+}
+
 async function saveProject(project: any) {
   const payload = {
     ...project,
     tags: project.tagsString ? project.tagsString.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
   }
   delete payload.tagsString
+  delete payload.images
   try {
     if (project.id) {
       await apiFetch(`/api/admin/projects/${project.id}`, { method: 'PUT', body: JSON.stringify(payload) })
     } else {
       const data = await apiFetch('/api/admin/projects', { method: 'POST', body: JSON.stringify(payload) })
       project.id = data.id
+      // Save pending gallery images
+      if (project.images?.length) {
+        for (const img of project.images) {
+          const imgData = await apiFetch(`/api/admin/projects/${project.id}/images`, {
+            method: 'POST',
+            body: JSON.stringify({ url: img.url, caption: img.caption || '' }),
+          })
+          img.id = imgData.id
+        }
+      }
     }
     showToast('Projet enregistré')
   } catch (e: any) {

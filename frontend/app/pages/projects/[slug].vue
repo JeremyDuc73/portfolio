@@ -49,6 +49,50 @@
           </div>
         </div>
 
+        <!-- Gallery images -->
+        <div v-if="project.images?.length" ref="galleryEl" class="mb-12">
+          <h2 class="font-display font-semibold text-xl text-white mb-4 flex items-center gap-3">
+            <div class="h-px w-8 bg-primary-500" />
+            Galerie
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div
+              v-for="img in project.images"
+              :key="img.id"
+              class="group rounded-2xl overflow-hidden bg-dark-900 cursor-pointer"
+              @click="openLightbox(img.url)"
+            >
+              <div class="relative aspect-video">
+                <img
+                  :src="img.url"
+                  :alt="img.caption || project.title"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  @error="($event.target as HTMLImageElement).style.display = 'none'"
+                />
+              </div>
+              <p v-if="img.caption" class="px-4 py-2 text-dark-400 text-sm">{{ img.caption }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linked skills -->
+        <div v-if="project.skills?.length" ref="skillsEl" class="mb-12">
+          <h2 class="font-display font-semibold text-xl text-white mb-4 flex items-center gap-3">
+            <div class="h-px w-8 bg-primary-500" />
+            Compétences utilisées
+          </h2>
+          <div class="flex flex-wrap gap-3">
+            <NuxtLink
+              v-for="skill in project.skills"
+              :key="skill.id"
+              :to="`/skills/${skill.id}`"
+              class="px-4 py-2 rounded-xl glass border border-white/5 text-dark-300 text-sm font-medium hover:border-primary-500/30 hover:text-primary-400 transition-all duration-300"
+            >
+              {{ skill.name }}
+            </NuxtLink>
+          </div>
+        </div>
+
         <!-- Technologies -->
         <div v-if="project.tags?.length" ref="techEl" class="mb-12">
           <h2 class="font-display font-semibold text-xl text-white mb-4 flex items-center gap-3">
@@ -98,6 +142,16 @@
         </NuxtLink>
       </div>
     </div>
+
+    <!-- Lightbox -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="lightboxUrl" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer" @click="lightboxUrl = null">
+          <img :src="lightboxUrl" class="max-w-full max-h-[90vh] rounded-xl object-contain" @click.stop />
+          <button class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-all" @click="lightboxUrl = null">✕</button>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -130,8 +184,15 @@ useHead({
 
 const headerEl = ref<HTMLElement | null>(null)
 const imageEl = ref<HTMLElement | null>(null)
+const galleryEl = ref<HTMLElement | null>(null)
+const skillsEl = ref<HTMLElement | null>(null)
 const techEl = ref<HTMLElement | null>(null)
 const relatedEl = ref<HTMLElement | null>(null)
+const lightboxUrl = ref<string | null>(null)
+
+function openLightbox(url: string) {
+  lightboxUrl.value = url
+}
 
 onMounted(() => {
   const { $gsap } = useNuxtApp()
@@ -153,10 +214,24 @@ onMounted(() => {
       )
     }
 
+    if (galleryEl.value) {
+      gsap.fromTo(galleryEl.value,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.25 }
+      )
+    }
+
+    if (skillsEl.value) {
+      gsap.fromTo(skillsEl.value,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.3 }
+      )
+    }
+
     if (techEl.value) {
       gsap.fromTo(techEl.value,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.3 }
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.35 }
       )
     }
 

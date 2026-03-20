@@ -96,16 +96,28 @@ adminRoutes.delete('/experience/:id', adminAuth, (c) => {
 })
 
 // ─── PROJECTS ────────────────────────────────────────────
+function enrichProject(row: any) {
+  const skillIds = (db.prepare('SELECT skill_id FROM project_skills WHERE project_id = ?').all(row.id) as any[]).map((r: any) => r.skill_id)
+  const images = db.prepare('SELECT * FROM project_images WHERE project_id = ? ORDER BY sort_order').all(row.id) as any[]
+  return { ...row, tags: JSON.parse(row.tags || '[]'), featured: !!row.featured, skill_ids: skillIds, images }
+}
+
 adminRoutes.get('/projects', adminAuth, (c) => {
   const rows = db.prepare('SELECT * FROM projects ORDER BY sort_order').all() as any[]
-  return c.json(rows.map((r) => ({ ...r, tags: JSON.parse(r.tags || '[]'), featured: !!r.featured })))
+  return c.json(rows.map(enrichProject))
 })
 
 adminRoutes.post('/projects', adminAuth, async (c) => {
   const data = await c.req.json()
   const result = db.prepare('INSERT INTO projects (slug, title, description, tags, image, github, demo, featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
     .run(data.slug, data.title, data.description, JSON.stringify(data.tags || []), data.image || '', data.github || '', data.demo || '', data.featured ? 1 : 0, data.sort_order || 0)
-  return c.json({ success: true, id: result.lastInsertRowid })
+  const projectId = result.lastInsertRowid
+  // Sync skills
+  if (Array.isArray(data.skill_ids)) {
+    const ins = db.prepare('INSERT OR IGNORE INTO project_skills (project_id, skill_id) VALUES (?, ?)')
+    for (const sid of data.skill_ids) ins.run(projectId, sid)
+  }
+  return c.json({ success: true, id: projectId })
 })
 
 adminRoutes.put('/projects/:id', adminAuth, async (c) => {
@@ -113,11 +125,38 @@ adminRoutes.put('/projects/:id', adminAuth, async (c) => {
   const data = await c.req.json()
   db.prepare('UPDATE projects SET slug=?, title=?, description=?, tags=?, image=?, github=?, demo=?, featured=?, sort_order=? WHERE id=?')
     .run(data.slug, data.title, data.description, JSON.stringify(data.tags || []), data.image || '', data.github || '', data.demo || '', data.featured ? 1 : 0, data.sort_order || 0, id)
+  // Sync skills
+  if (Array.isArray(data.skill_ids)) {
+    db.prepare('DELETE FROM project_skills WHERE project_id = ?').run(id)
+    const ins = db.prepare('INSERT OR IGNORE INTO project_skills (project_id, skill_id) VALUES (?, ?)')
+    for (const sid of data.skill_ids) ins.run(id, sid)
+  }
   return c.json({ success: true })
 })
 
 adminRoutes.delete('/projects/:id', adminAuth, (c) => {
   db.prepare('DELETE FROM projects WHERE id=?').run(c.req.param('id'))
+  return c.json({ success: true })
+})
+
+// ─── PROJECT IMAGES ─────────────────────────────────────
+adminRoutes.get('/projects/:id/images', adminAuth, (c) => {
+  const id = c.req.param('id')
+  const images = db.prepare('SELECT * FROM project_images WHERE project_id = ? ORDER BY sort_order').all(id)
+  return c.json(images)
+})
+
+adminRoutes.post('/projects/:id/images', adminAuth, async (c) => {
+  const projectId = c.req.param('id')
+  const data = await c.req.json()
+  const maxOrder = (db.prepare('SELECT MAX(sort_order) as m FROM project_images WHERE project_id = ?').get(projectId) as any)?.m || 0
+  const result = db.prepare('INSERT INTO project_images (project_id, url, caption, sort_order) VALUES (?, ?, ?, ?)')
+    .run(projectId, data.url, data.caption || '', maxOrder + 1)
+  return c.json({ success: true, id: result.lastInsertRowid })
+})
+
+adminRoutes.delete('/projects/:id/images/:imageId', adminAuth, (c) => {
+  db.prepare('DELETE FROM project_images WHERE id = ? AND project_id = ?').run(c.req.param('imageId'), c.req.param('id'))
   return c.json({ success: true })
 })
 

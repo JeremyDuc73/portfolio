@@ -30,21 +30,27 @@ app.get('/api/maintenance', (c) => {
   return c.json(settings || { maintenance_mode: 0, maintenance_message: '' })
 })
 
-// Public skill detail (with associated projects)
+// Public skill detail (with associated projects via join table)
 app.get('/api/skills/:id', (c) => {
   const id = c.req.param('id')
   const skill = db.prepare('SELECT * FROM skills WHERE id = ?').get(id) as any
   if (!skill) return c.json({ error: 'Not found' }, 404)
 
-  const allProjects = db.prepare('SELECT * FROM projects ORDER BY sort_order').all() as any[]
-  const related = allProjects
-    .filter((p: any) => {
-      const tags: string[] = JSON.parse(p.tags || '[]')
-      return tags.some((t: string) => t.toLowerCase().includes(skill.name.toLowerCase()) || skill.name.toLowerCase().includes(t.toLowerCase()))
-    })
-    .map((p: any) => ({ ...p, tags: JSON.parse(p.tags || '[]'), featured: !!p.featured }))
+  const related = db.prepare(`
+    SELECT p.* FROM projects p
+    INNER JOIN project_skills ps ON ps.project_id = p.id
+    WHERE ps.skill_id = ?
+    ORDER BY p.sort_order
+  `).all(id) as any[]
 
-  return c.json({ ...skill, projects: related })
+  const projects = related.map((p: any) => ({
+    ...p,
+    tags: JSON.parse(p.tags || '[]'),
+    featured: !!p.featured,
+    images: db.prepare('SELECT * FROM project_images WHERE project_id = ? ORDER BY sort_order').all(p.id),
+  }))
+
+  return c.json({ ...skill, projects })
 })
 
 // Serve uploaded files
